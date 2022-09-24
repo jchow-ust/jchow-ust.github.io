@@ -1,0 +1,342 @@
+---
+title: "MATH3424 HW4"
+author: "Chow, Hau Cheung Jasper (hcjchow / 20589533)"
+date: "November 15, 2021"
+output: pdf_document
+---
+
+## Q1
+
+```{r}
+setwd("/Users/jchow/Downloads/MATH3424 R") # need to set the starting directory as this
+# since values are comma-separated
+crude_oil_data <- read.csv(file="Crude-Oil-Production.txt",header=TRUE)
+adv_data <- read.table(file="Advertising.txt",header=TRUE)
+gasoline_data <- read.table(file="Gasoline-Consumption.txt",header=TRUE)
+
+crude_oil_data$Barrels = log(crude_oil_data$Barrels) # nat log
+
+crude_oil_model_1 = lm(Barrels ~ ., data = crude_oil_data)
+summary(crude_oil_model_1)
+```
+
+
+```{r}
+crude_oil_model_1.residuals <- rstandard(crude_oil_model_1)
+
+plot(seq(1,length(crude_oil_data$Year)), crude_oil_model_1.residuals, xlab="Index", ylab="Residuals")
+
+library(snpar) # need to install this package
+runs.test(crude_oil_model_1$residuals)
+```
+Q1a) There is a clear pattern in the residuals (close to quadratic) and we may expect this due to time series data usually being positively correlated. From the runs test conducted, we see that the p-value is very small, suggesting we reject the null hypothesis (that the residuals are uncorrelated and random) even at very low significance level values of $\alpha$. Hence, the alternative hypothesis is true; the errors are clearly autocorrelated. 
+
+Q1b) 
+
+```{r}
+library(car)
+durbinWatsonTest(crude_oil_model_1, alternative="positive") # positive, negative or two.sided
+
+n = length(crude_oil_data$Year) # total number of datapoints
+dw_manual <- sum((crude_oil_model_1$residuals[-1]-crude_oil_model_1$residuals[-n])^2)
+dw_manual <- dw_manual/sum(crude_oil_model_1$residuals^2)
+dw_manual
+```
+
+The Durbin-Watson statistic is $d=0.1945361$. As there are $p=1$ predictor variable(s) and $n=29$, the critical value is $d_{L}=1.12$ at significance level $\alpha=0.01$ and $d<d_{L}$. (Alternatively we examine the p-value and find that it is 0.) Therefore we reject $H_0:\rho=0$ where $\rho$ is the correlation coefficient between successive error terms, so there IS autocorrelation.
+
+Q1c) 
+
+```{r}
+n1 <- sum(crude_oil_model_1$residuals > 0)
+n2 <- sum(crude_oil_model_1$residuals < 0)
+mu <- 2*n1*n2/(n1+n2) + 1
+sigma_sq <- 2*n1*n2*(2*n1*n2-n1-n2)/((n1+n2-1)*(n1+n2)^2)
+
+mu
+sigma_sq^0.5
+
+rts <- (5-mu)/(sigma_sq^0.5)
+rts
+1-pnorm(rts, lower.tail=FALSE)
+```
+
+We observe that $\mu=14.10345,\sigma=2.379953$ but the actual number of runs in the data is 5. Computing the run test statistic we get $-3.825054$, the absolute value of which is larger than the critical value of $z_{1-\alpha/2}=z_{0.975}=1.96$ when $\alpha=0.05$ which means we reject the $H_0$ at significance $\alpha=0.05$ that the residuals are uncorrelated and random. This means autocorrelation is present. (Alternatively we check the p-value computed in 1a.)
+
+Q1d)
+
+1. Compute OLS estimates of $\hat{\beta_0}$, $\hat{\beta_1}$ by fitting them to data
+
+2. Calculate residuals and from residuals estimate $\rho$:
+
+```{r}
+rho_hat <- sum(crude_oil_model_1$residuals[-1]*crude_oil_model_1$residuals[-n])
+rho_hat <- rho_hat/sum(crude_oil_model_1$residuals^2)
+```
+
+3. Fit $y_{t}^{*}=y_t-\hat{\rho}y_{t-1}$ to $x_{t}^{*}=x_t-\hat{\rho}x_{t-1}$.
+
+```{r}
+x_t_star <- crude_oil_data$Year[-1]-crude_oil_data$Year[-n]*rho_hat
+y_t_star <- crude_oil_data$Barrels[-1]-crude_oil_data$Barrels[-n]*rho_hat
+crude_oil_model_2 <- lm(y_t_star ~ x_t_star)
+summary(crude_oil_model_2)
+```
+
+4. Examine residuals of newly fitted equation.
+
+```{r}
+crude_oil_model_2.residuals <- rstandard(crude_oil_model_2)
+
+# need the -1 since Cochrane-Orcutt fits one less data point
+plot(seq(1,length(crude_oil_data$Year)-1), crude_oil_model_2.residuals, xlab="Index", ylab="Residuals")
+
+durbinWatsonTest(crude_oil_model_2, alternative="positive")
+```
+
+The residuals plot is slightly improved since there is no longer a pattern in indices 0-10, but there is still a significant pattern in indices 15-25 that indicates autocorrelation may still be present. Further use of the Cochrane-Orcutt procedure may be required.
+
+## Q2
+
+```{r}
+library(regclass)
+adv_data_2 <- adv_data[-1,] # remove the 1st element
+adv_data_2$S_.t.1. <- adv_data$S_t[-22] # number of datapoints is 22
+# A_{t-1} gets rewritten to A_.t.1.
+adv_model_1 = lm(S_t ~ E_t + P_t + A_.t.1. + S_.t.1., data=adv_data_2)
+adv_model_2 = lm(S_t ~ E_t + A_t + A_.t.1. + S_.t.1., data=adv_data_2)
+adv_model_3 = lm(S_t ~ E_t + A_t + P_t + S_.t.1., data=adv_data_2)
+adv_model_4 = lm(S_t ~ E_t + A_t + P_t + A_.t.1., data=adv_data_2)
+VIF(adv_model_1)
+VIF(adv_model_2)
+VIF(adv_model_3)
+VIF(adv_model_4)
+summary(adv_model_1)
+summary(adv_model_2)
+summary(adv_model_3)
+summary(adv_model_4)
+plot(seq(1,length(adv_data_2$S_t)), rstandard(adv_model_1), xlab="Index (model 1)", ylab="Residuals")
+plot(seq(1,length(adv_data_2$S_t)), rstandard(adv_model_2), xlab="Index (model 2)", ylab="Residuals")
+plot(seq(1,length(adv_data_2$S_t)), rstandard(adv_model_3), xlab="Index (model 3)", ylab="Residuals")
+plot(seq(1,length(adv_data_2$S_t)), rstandard(adv_model_4), xlab="Index (model 4)", ylab="Residuals")
+```
+
+We observe that in all cases, the models have high $R^2$ and high $F$ statistic and the index vs standard residuals plot are good (show no pattern). Since the VIF for each predictor in each of the 4 models are now all less than 10, we can say that collinearity has been removed in each case. Overall we observe model \texttt{adv\_model\_4} seems to be the best since all of its VIFs are very close to 1.
+
+## Q3
+
+```{r}
+p = 5 # number of predictors
+standardize <- function(column){
+  return ((column-mean(column))/sd(column))
+}
+adv_data_stand <- apply(adv_data, 2, function(x) (x-mean(x))/sd(x))
+#test_data_stand <- apply(adv_data, 2, standardize)
+y_stand <- adv_data_stand[,1]
+x_stand <- adv_data_stand[,-1]
+I_p <- diag(p)
+
+k_1_vec <- c(0.000, 0.001, 0.003, 0.005, 0.007, 0.009)
+k_2_vec <- seq(from=0.01, to=0.03, by=0.002)
+k_3_vec <- seq(from=0.04, to=0.09, by=0.01)
+k_4_vec <- seq(from=0.1, to=1, by=0.1)
+k_vec <- c(k_1_vec, k_2_vec, k_3_vec, k_4_vec)
+
+# create a matrix 'df_theta' to hold the regression parameters for each value of k
+df_theta <- matrix(data=NA, nrow=length(k_vec), ncol=p)
+for (index in (1:length(k_vec)))
+{
+  k = k_vec[index]
+  theta_hat <- solve(t(x_stand) %*% x_stand + k*I_p) %*% t(x_stand) %*% y_stand
+  df_theta[index,] = theta_hat
+}
+
+#for (col_index in (1:p))
+#{ # separate plots
+#  plot(k_vec, df_theta[,col_index], xlab="bias parameter k", #ylab="hat(theta)_j(k)")
+#}
+
+# set ylimit to (-0.2,1) interval. red=theta_1(k), green=theta_2(k), etc.
+colours = c("red", "green", "dark red", "blue", "purple")
+plot(k_vec, df_theta[,1], col=colours[1], pch="o", xlab="k", ylab="hat(theta)_j(k)", ylim=c(-0.2,1))
+for (col_index in (2:p))
+{
+  points(k_vec, df_theta[,col_index], col=colours[col_index], lty=1)
+  lines(k_vec, df_theta[,col_index], col=colours[col_index], lty=1)
+}
+
+```
+
+We want to select the smallest value of $k$ such that ALL the regression coefficients are beginning to stabilise. From the ridge trace, we can see this occurs at approximately $k=0.65$.
+
+Q3b)
+
+```{r}
+df_theta[1,]
+adv_model_5 <- lm(S_t ~ ., data=as.data.frame(adv_data_stand))
+summary(adv_model_5)
+```
+
+```{r}
+n <- length(y_stand)
+epsilon = 0.00001 # user defined threshold
+
+# (fitted-actual)^2/16, remember to use standardised data!
+sigmahatsq_0 = sum((adv_model_5$fitted.values-y_stand)^2)/(n-p-1)
+numerator = p*sigmahatsq_0
+denom = sum((df_theta[1,])^2)
+
+k_0 = numerator/denom
+last_k_i = k_0+1 # ensures first iteration never converges
+k_i = k_0
+count = 0
+
+while (TRUE)
+{
+  theta_hat <- solve(t(x_stand) %*% x_stand + k_i*I_p) %*% t(x_stand) %*% y_stand
+  denom = sum((theta_hat)^2)
+  k_i = numerator/denom
+  if (abs(k_i-last_k_i) <= epsilon){
+    break
+  }
+  last_k_i = k_i
+  count <- count+1
+}
+
+
+theta_hat_iterative_method_k <- solve(t(x_stand) %*% x_stand + k_i*I_p) %*% t(x_stand) %*% y_stand
+
+k_i
+count
+
+sd_all <- apply(adv_data[,-1], 2, sd)
+mean_all <- apply(adv_data[,-1], 2, mean)
+beta_1_to_j <- theta_hat_iterative_method_k*sd(adv_data$S_t)/sd_all # beta_j = theta_j*(sy/sj)
+beta_0 <- mean(adv_data$S_t) - sum(mean_all*beta_1_to_j) # beta_0 = mean(y) - sum(mean(x_j)*beta_j)
+beta_original <- rbind(beta_0, beta_1_to_j)
+beta_original
+summary(lm(S_t ~ ., data=adv_data))
+```
+
+Compared to the OLS estimates, we see that the coefficient for $E_t$ is largely the same, but the coefficients for $A_t,P_t,A_{t-1},P_{t-1}$ are significantly different. This matches our conclusion with the ridge trace approach; only the collinear variables have unstable regression coefficients and in Q2 and in the lectures we had determined that $E_t$ was not collinear to any other variable but the other variables were, so its coefficient would not change much when $k$ changed, but the other variables' coefficients would change significantly when $k$ changed.
+
+## Q4
+
+Q4a) No, as there is multicollinearity present. An examination of the correlation matrix (conducted below) between predictors reveals some variables have extremely high correlation magnitudes (such as $X_3$ and $X_2$, $X_3$ and $X_1$, $X_{10}$ and $X_1$ etc.) Overall, $X_1,X_2,X_3$ seem to be strongly related to each other, and $X_{10}$ appears to be strongly related to both $X_8$ and $X_1$.
+
+```{r}
+cor(gasoline_data)
+```
+
+Q4b)
+
+For Mallow's $C_p$, we need to choose a full model such that all proposed models are reduced forms of it. We will use the full model defined as follows: $Y=\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_5+\beta_4X_8+\beta_5X_{10}+\epsilon$.
+
+```{r}
+gasoline_model_1 <- lm(Y ~ X_1, data=gasoline_data)
+gasoline_model_2 <- lm(Y ~ X_.10., data=gasoline_data)
+gasoline_model_3 <- lm(Y ~ X_1 + X_.10., data=gasoline_data)
+gasoline_model_4 <- lm(Y ~ X_2 + X_.10., data=gasoline_data)
+gasoline_model_5 <- lm(Y ~ X_8 + X_.10., data=gasoline_data)
+gasoline_model_6 <- lm(Y ~ X_8 + X_5 + X_.10., data=gasoline_data)
+```
+
+```{r}
+library(stats)
+library(olsrr)
+gasoline_model_full <- lm(Y ~ X_1+X_2+X_5+X_8+X_.10., data=gasoline_data)
+crit <- data.frame(model_a=rep(0,4),
+                   model_b=rep(0,4),
+                   model_c=rep(0,4),
+                   model_d=rep(0,4),
+                   model_e=rep(0,4),
+                   model_f=rep(0,4))
+row.names(crit) <- c("Adjusted R^2", "Mallow's Cp", "AIC", "BIC")
+crit[1,] <- c(summary(gasoline_model_1)$adj.r.squared,
+              summary(gasoline_model_2)$adj.r.squared,
+              summary(gasoline_model_3)$adj.r.squared,
+              summary(gasoline_model_4)$adj.r.squared,
+              summary(gasoline_model_5)$adj.r.squared,
+              summary(gasoline_model_6)$adj.r.squared)
+crit[2,] <- c(ols_mallows_cp(gasoline_model_1,gasoline_model_full),
+              ols_mallows_cp(gasoline_model_2,gasoline_model_full),
+              ols_mallows_cp(gasoline_model_3,gasoline_model_full),
+              ols_mallows_cp(gasoline_model_4,gasoline_model_full),
+              ols_mallows_cp(gasoline_model_5,gasoline_model_full),
+              ols_mallows_cp(gasoline_model_6,gasoline_model_full))
+crit[3,] <- c(AIC(gasoline_model_1),
+              AIC(gasoline_model_2),
+              AIC(gasoline_model_3),
+              AIC(gasoline_model_4),
+              AIC(gasoline_model_5),
+              AIC(gasoline_model_6))
+crit[4,] <- c(BIC(gasoline_model_1),
+              BIC(gasoline_model_2),
+              BIC(gasoline_model_3),
+              BIC(gasoline_model_4),
+              BIC(gasoline_model_5),
+              BIC(gasoline_model_6))
+crit
+```
+
+```{r}
+plot(c(1,1,2,2,2,3),crit[2,],xlim=c(0,9),ylim=c(0,9),xlab="p",ylab="Mallow's Cp")
+abline(a=0,b=1)
+```
+
+The model with the highest adjusted R-squared is model (f). The model with the smallest Mallow's $C_p$ is preferred, and that is also model (f) (we also see from the plot that model (f) is the model whose $(p,C_p)$ point is closest to the line with intercept 0 and slope 1 (the desirable criteria.)) Models with smaller AIC and BIC are preferred. The model with the smallest AIC is model (f) and the model with the smallest BIC is (a), although model (f) has the 2nd smallest BIC. In conclusion, the best model is likely model (f).
+
+Q4c)
+
+```{r}
+plot(gasoline_data$X_1, gasoline_data$Y)
+plot(gasoline_data$X_2, gasoline_data$Y)
+plot(gasoline_data$X_8, gasoline_data$Y)
+plot(gasoline_data$X_.10., gasoline_data$Y)
+```
+
+The plots show that Y tends to decrease as the values of the predictors increase but the rate at which they decrease gets smaller the larger the values of the predictor. It may suggest that the relationship between Y and these predictors is not necessarily linear.
+
+Q4d)
+
+1. Start with intercept-only model.
+
+```{r}
+t_cutoff_df = length(gasoline_data$Y)-2
+t_cutoff <- qt(0.025, df=t_cutoff_df, lower.tail=FALSE)
+t_cutoff
+
+gasoline_data_4d = subset(gasoline_data, select=c("Y","X_1","X_2","X_5","X_8","X_.10."))
+gasoline_forward_0 = lm(Y ~ 1, data=gasoline_data)
+
+# ignore correlation with itself, choose predictor with highest magnitude of correlation with response
+cor(gasoline_data_4d)
+names(which.max(abs(cor(gasoline_data_4d)[1,-1])))
+
+gasoline_forward_1 = lm(Y ~ X_1, data=gasoline_data)
+
+# get t-value of added coefficient. Here it is significant so we continue.
+summary(gasoline_model_1)$coefficients[,"t value"][2]
+```
+
+2. Since the t-value of the added predictor was significant and exceeded \texttt{t\_cutoff}, we continue and try to select the predictor which has the highest correlation with residuals of the previous model
+
+```{r}
+t_cutoff_df <- t_cutoff_df - 1 # add another predictor
+t_cutoff <- qt(0.025, df=t_cutoff_df, lower.tail=FALSE)
+t_cutoff
+
+gasoline_data_4d <- subset(gasoline_data_4d, select = -c(X_1))
+
+names(which.max(abs(cor(residuals(gasoline_forward_1),
+                        gasoline_data_4d)[1,-1]))) 
+
+gasoline_forward_2 = lm(Y ~ X_1 + X_5, data=gasoline_data)
+
+# get t-value of added coefficient. Here it is insignificant so we stop and return gasoline_forward_1
+summary(gasoline_forward_2)$coefficients[,"t value"][3] 
+
+summary(gasoline_forward_1)
+```
+
+Since the coefficient for the new predictor is insignificant, we ignore it and return to the model with 1 predictor. Hence, after applying forward selection, our final fitted model is $\hat{Y}=\hat{\beta_0}+\hat{\beta_1}X_1$. 

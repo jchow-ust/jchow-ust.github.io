@@ -1,0 +1,437 @@
+---
+title: "MATH3424 HW3"
+author: "Chow, Hau Cheung Jasper (hcjchow / 20589533)"
+date: "October 25, 2021"
+output: pdf_document
+---
+
+## Q1
+
+Q1a) Number of df's in ANOVA F-test = $48=n-p-1$
+where $p=1$ in this case, hence number of workers is $n=50$.
+
+Q1b) $Var(Y)=\sum_{i=1}^{n} \dfrac{(y_i-\bar{y})^2}{n-1}=SST/(n-1)=(SSE+SSR)/(n-1)=(98.8313+338.449)/49=8.924088$.
+
+Q1c) Since it is well known $\bar{Y}=\hat{\beta_0} + \hat{\beta_1}\bar{X}$ in simple linear regression, $\bar{Y}=15.58+0.52*(-2.81)=14.1188$
+
+Q1d) Since $n=50$, if $\bar{X}=0.52$ then $\sum_{i=1}^{50} X_i=0.52*50=26$
+
+Hence there are 26 men and 24 women.
+
+Q1e) Percentage of variability between Y and X can be expressed as $R^2=SSR/SST=98.8313/(98.8313+338.449)=0.2260136$ so the answer is 22.60136%.
+
+Q1f) $[Cor(Y,X)]^2=R^2$
+
+Since the regression coefficient for $X$ is negative, we choose the negative root.
+$Cor(Y,X)=-(0.2261036)^{1/2}=-0.4754089$
+
+Q1g) $\hat{\beta_1}$ describes: estimated weekly wages of a male worker minus estimated weekly wages of a female worker (the male worker earns $281 less).
+
+Q1h) $15.58-2.81=12.77.$ Then multiply by \$100 to get \$1277
+
+Q1i) \$1558
+
+Q1j) CI is $\hat{\beta_1} \pm t_{n-2,\alpha/2}\times s.e.(\hat{\beta_1})$
+
+$t_{n-2,\alpha/2}=t_{48,0.025}=2.010635, s.e.(\hat{\beta_1})=0.75$
+
+$CI=[-2.81\pm 2.010635*0.75]=[-4.317976,-1.302024]$
+
+Q1k) $H_0:\hat{\beta_1}=0,H_1:\hat{\beta_1}\neq 0$
+
+$t_1=\dfrac{\hat{\beta_1}}{s.e.(\hat{\beta_1})}=\dfrac{-2.81}{0.75}=-3.7467$
+
+$t_{critical}=t_{n-p-1,\alpha/2}=t_{48,0.025}=2.010635$
+
+Since $|t_1| > t_{critical}$, we reject $H_0$ at significance level $\alpha=0.05$ i.e. we conclude that the average weekly ages of men is not equal to that of the women.
+
+```{r}
+# Q1b
+(98.8313+338.449)/49
+# Q1c
+15.58+0.52*(-2.81)
+# Q1e, Q1f, Q1h
+98.8313/(98.8313+338.449)
+(98.8313/(98.8313+338.449))^0.5
+15.58-2.81
+# Q1j
+q1j_t = qt(0.025,df=48,lower.tail=FALSE)
+q1j_t
+-2.81-q1j_t*0.75
+-2.81+q1j_t*0.75
+```
+
+## Q2
+
+```{r}
+setwd("/Users/jchow/Downloads/MATH3424 R") # need to set the starting directory as this
+elect_data <- read.table(file="Presidential Election Data.txt",header=TRUE)
+
+elect_data$GI <- elect_data$G * elect_data$I
+elect_data_2a <- subset(elect_data,select=c("V","I","D","W","GI","P","N"))
+
+elect_model_1 = lm(V ~ ., data = elect_data_2a)
+summary(elect_model_1)
+
+cor(elect_data_2a$I, elect_data_2a$D)
+```
+
+Q2a) At $D=1:$
+
+$\hat{V}=0.5658-0.0201I+0.0134W+0.0097(G\cdot I)-0.0007P-0.0052N$
+
+At $D=0:$
+
+$\hat{V}=0.5112-0.0201I+0.0134W+0.0097(G\cdot I)-0.0007P-0.0052N$
+
+At $D=-1:$
+
+$\hat{V}=0.4566-0.0201I+0.0134W+0.0097(G\cdot I)-0.0007P-0.0052N$
+
+The coefficient for $D$ represents the increase in predicted democratic share of the vote when:
+
+a non-Democrat and non-Republican incumbent running for election (0) compared to if a Republican incumbent running for election (-1) AND all other variables held constant; OR
+
+a Democrat incumbent running for election (1) compared to if a non-Democrat and non-Republican incumbent running for election (0) AND all other variables held constant.
+
+Q2b) Only the coefficients for $D$ and $G\cdot I$ are statistically significant at $\alpha=0.05$ due to their low p-values. As such, we probably don't need to keep $I$. Furthermore, $I$ and $D$ have high correlation of 0.81 so we may not need to include $I$ if $D$ already in the model.
+
+Q2c) We should keep it, since the p-value for the coefficient of $G\cdot I$ is very low, making it statistically significant at $\alpha=0.05$. However due to high correlation of $D$ and $I$ as mentioned in 2b, it may be the case that we should include $G\cdot D$ instead of $G\cdot I$.
+
+Q2d) As stated in 2b, we may not need to include both $I$ and $D$ since they are highly correlated. Here we choose to include $D$ and exclude $I$ since its correlation with $V$ is higher. Secondly, the indicator variable $W$ indicating presence of election preceding or following war may not be of much use since only 3 observations have $W=1$, hence we may consider dropping it. Additionally, if a given party is incumbent and performs well while in office (ie good economic performance aka high values of $N$ and $P$), we expect that party to remain incumbent (have a higher vote share.) Therefore, we expect that the interaction terms $P\cdot D$ and $N\cdot D$ to be significant. Fourth, we have the interaction term $G\cdot D$ replacing $G\cdot I$ and the term $G$ itself.
+
+Hence, we remove $I$, remove $W$, add $G$, replace $G\cdot I$ with $G\cdot D$ and add interaction terms $P\cdot D$ and $N\cdot D$. This leaves us with the model $V=\beta_0+\beta_1D+\beta_2(G\cdot D)+\beta_3P+\beta_4N+\beta_5(P\cdot D)+\beta_6(N \cdot D)+\beta_7G+\epsilon$.
+
+```{r}
+cor(elect_data_2a$V, elect_data_2a$D)
+cor(elect_data_2a$V, elect_data_2a$I)
+
+elect_data$GD <- elect_data$G * elect_data$D
+elect_data$PD <- elect_data$P * elect_data$D
+elect_data$ND <- elect_data$N * elect_data$D
+elect_data_2d <- subset(elect_data,select=c("V","D","GD","P","N","PD","ND","G"))
+
+elect_model_2 = lm(V ~ ., data = elect_data_2d)
+summary(elect_model_2)
+```
+
+As we can see, some coefficients are not statistically significant, like PD, G, D, and P. If we remove the predictors one at a time starting with the one whose coefficient has the highest p-value (D) and refit the model:
+
+```{r}
+elect_data_2d <- subset(elect_data,select=c("V","GD","P","N","PD","ND","G"))
+elect_model_3 = lm(V ~ ., data = elect_data_2d)
+summary(elect_model_3)
+```
+
+Keep going until all coefficients are significant. Remove P next.
+
+```{r}
+elect_data_2d <- subset(elect_data,select=c("V","GD","N","PD","ND","G"))
+elect_model_4 = lm(V ~ ., data = elect_data_2d)
+summary(elect_model_4)
+```
+
+Remove PD next.
+
+```{r}
+elect_data_2d <- subset(elect_data,select=c("V","GD","N","ND","G"))
+elect_model_5 = lm(V ~ ., data = elect_data_2d)
+summary(elect_model_5)
+anova(elect_model_5, elect_model_2)
+```
+
+Ultimately, this leaves us with the model $\hat{V}=0.5109+0.0114(G\cdot D)-0.0083N+0.0053(N\cdot D)+0.0041G$ as our final model, in which each coefficient is statistically significant at the $\alpha=0.05$ level, and the adjusted R-squared is reasonably high at 0.76 and is a slight increase over the original full model $V=\beta_0+\beta_1D+\beta_2(G\cdot D)+\beta_3P+\beta_4N+\beta_5(P\cdot D)+\beta_6(N \cdot D)+\beta_7G+\epsilon$.
+
+## Q3
+
+```{r}
+elect_data_q3 <- read.table(file="Presidential Election Data.txt",header=TRUE)
+
+elect_data_q3$GI <- elect_data_q3$G * elect_data_q3$I
+
+elect_data_q3$D <- as.factor(elect_data_q3$D)  # D in {-1, 0, 1} is indicator
+elect_data_q3 <- within(elect_data_q3, D<-relevel(D,ref=2)) # 0 aka 2nd category is the base class
+elect_data_q3a <- subset(elect_data_q3,select=c("V","I","D","W","GI","P","N"))
+
+elect_model_q3 = lm(V ~ ., data = elect_data_q3a)
+summary(elect_model_q3)
+```
+
+Q3a) At $D=1$:
+
+$\hat{V}=0.5688-0.0206I+0.0124W+0.0094(G\cdot I)-0.0007P-0.0051N$
+
+At $D=0$:
+
+$\hat{V}=0.5055-0.0206I+0.0124W+0.0094(G\cdot I)-0.0007P-0.0051N$
+
+At $D=-1$:
+
+$\hat{V}=0.4585-0.0206I+0.0124W+0.0094(G\cdot I)-0.0007P-0.0051N$
+
+$\alpha_1$, regression coefficient of $D_1$, corresponds to the increase in democratic vote share if Democrat incumbent running for election (1) compared to if a non-Democrat and non-Republican incumbent running for election (0) AND all other variables held constant.
+
+$\alpha_2$, regression coefficient of $D_2$, corresponds to the decrease in democratic vote share if Republican incumbent running for election (-1) compared to if non-Democrat and non-Republican incumbent running for election (0), AND all other variables held constant.
+
+Q3b) Consider the initial model $V=\beta_0+\beta_1I+\beta_2D+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$. Since $D\in \{-1,0,1\}$, consider the initial model for all values of $D$:
+
+$V=\beta_0+\beta_1I+\beta_2+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$ at $D=1$
+
+$V=\beta_0+\beta_1I+0+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$ at $D=0$
+
+$V=\beta_0+\beta_1I-\beta_2+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$ at $D=-1$
+
+Consider our new model $V=\beta_0+\beta_1I+\alpha_1D_1+\alpha_2D_2+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$. Now assume in the new model $\alpha_1=-\alpha_2$. Then new model becomes $V=\beta_0+\beta_1I-\alpha_2D_1+\alpha_2D_2+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon=\beta_0+\beta_1I+\alpha_2(D_2-D_1)+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$. Now consider the new model for all values of $D$.
+
+$V=\beta_0+\beta_1I-\alpha_2+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$ at $D=1$ since $D_2-D_1=-1$;
+
+$V=\beta_0+\beta_1I+0+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$ at $D=0$ since $D_2-D_1=0$;
+
+$V=\beta_0+\beta_1I+\alpha_2+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$ at $D=-1$ since $D_2-D_1=1$;
+
+Observe that if $\alpha_2=-\beta_2$, we simply get the equation(s) for the initial model in each case.
+
+Q3c) Let $V=\beta_0+\beta_1I+\alpha_1D_1+\alpha_2D_2+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$ be the new model. Declare $\gamma=\alpha_1+\alpha_2$. Then the new model can be rewritten as $V=\beta_0+\beta_1I+(\gamma-\alpha_2)D_1+\alpha_2D_2+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon=\beta_0+\beta_1I+\gamma*D_1+\alpha_2*(D_2-D_1)+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$. 
+As such, the null hypothesis $H_0:\alpha_1=-\alpha_2$ can be rewritten as: $H_0:\gamma=0$ with $H_1:\gamma \neq 0$ as alternative.
+
+```{r}
+elect_data_3c <- subset(elect_data,select=c("V","I","D","W","GI","P","N"))
+
+elect_data_3c$D2 <- rep(0,dim(elect_data)[1])
+elect_data_3c$D2[which(elect_data_3c$D==-1)] <- 1 # create D2 column
+
+elect_data_3c$D1 <- rep(0,dim(elect_data)[1])
+elect_data_3c$D1[which(elect_data_3c$D==1)] <- 1 # create D1 column
+elect_data_3c$D2minusD1 <- elect_data_3c$D2 - elect_data_3c$D1 # create D2-D1 column
+
+elect_data_3c <- subset(elect_data_3c,select=c("V","I","D1","D2minusD1","W","GI","P","N"))
+elect_model_3c = lm(V ~ ., data = elect_data_3c)
+summary(elect_model_3c)
+```
+
+From the t-test on coefficient of $D_1$ aka $\gamma$, the p-value is very large so we fail to reject $H_0$ at all significance below $0.708979$. Hence the data does seem to support the assumption that $\alpha_1=-\alpha_2$.
+
+## Q4
+
+Q4a) From the table, correlation coefficient i.e. $Cor(X,Y)=Cor(X,Y^\lambda)=-0.777$ when $\lambda=1$.
+
+Q4b) The most important objective of variable transformation is to achieve linearity i.e. a high magnitude of correlation coefficient. When $\lambda>0$, the correlation is highly negative. When $\lambda<0$, the correlation is highly positive. The best value for $\lambda$ is -1, since the absolute value of the correlation is the highest among all tested $\lambda$. This implies that $X$ and $Y^{-1}$ are extremely strongly linearly related.
+
+Q4c) $\dfrac{1}{Y}=\beta_0+\beta_1X+\epsilon$
+
+## Q5
+
+The standard regression assumptions are:
+
+(1) Assumption of linearity
+
+(2.1) Assumption that errors are independent of each other
+
+(2.2) Assumption that errors are normally distributed
+
+(2.3) Assumption that errors each have mean 0
+
+(2.4) Assumption that errors each have common variance $\sigma^2$
+
+(3.1) Assumption that predictor variables $X_1,X_2,...X_n$ are nonrandom.
+
+(3.2) Assumption that predictor values $x_{1j},x_{2j},...,x_{nj}$ are measured without error.
+
+(3.3) Assumption that predictors  $X_1,X_2,...X_n$ are independent of each other.
+
+(4) Assumption that all observations are equally reliable and have an approximately equal role in determining regression results.
+
+```{r}
+leverages <- hatvalues(elect_model_1) # compute leverages for model V
+elect_model_1.residuals <- rstandard(elect_model_1)
+
+plot(seq(1,length(elect_data$V)), leverages, xlab="Index", ylab="Leverages")
+plot(seq(1,length(elect_data$V)), elect_model_1.residuals, xlab="Index", ylab="Residuals")
+
+qqnorm(elect_model_1.residuals, ylab="Sample Quantiles", xlab="Theoretical Quantiles")
+qqline(elect_model_1.residuals)
+
+plot(fitted.values(elect_model_1), elect_model_1.residuals, ylab="Std. Residuals", xlab="Response")
+plot(elect_data_2a$I, elect_model_1.residuals, ylab="Std. Residuals", xlab="I")
+plot(elect_data_2a$D, elect_model_1.residuals, ylab="Std. Residuals", xlab="D")
+plot(elect_data_2a$W, elect_model_1.residuals, ylab="Std. Residuals", xlab="W")
+plot(elect_data_2a$GI, elect_model_1.residuals, ylab="Std. Residuals", xlab="GI")
+plot(elect_data_2a$P, elect_model_1.residuals, ylab="Std. Residuals", xlab="P")
+plot(elect_data_2a$N, elect_model_1.residuals, ylab="Std. Residuals", xlab="N")
+abline(a=0, b=0, col="red")
+
+cor(elect_data_2a)
+
+library(olsrr)
+ols_plot_cooksd_bar(elect_model_1)
+ols_plot_hadi(elect_model_1)
+ols_plot_dffits(elect_model_1)
+```
+
+From the above residual-index and leverage-index plots, the leverages do not follow a random pattern, since the earlier observations appear to have more leverage. The standardised residuals largely follow a random pattern with the exception of observation 20 which has quite a high standardised residual. Hence (2.1) is likely violated. 
+
+Under the normality of errors assumption (2.2), the ordered residuals should be approximately form a straight line with slope 1 and intercept 0 with the quantiles of the standard normal distribution. From examining the Q-Q plot of the standardised residuals against the standard normal distribution, we notice that the sample quantiles mostly appear to match the theoretical quantiles with the exception of the last 3 points hence it is likely (2.2) is violated.
+
+Assumption (2.3) is assumed to be true by least squares in an intercept model.
+
+The standard residuals should be uncorrelated with the predictor variables/response. As such when plotting the std. residuals against each of the predictors, we expect to see a random scatter of points, which is true for I, D, Response, GI, P and N but NOT for W (although this can likely be forgiven since there are very few points where $W=1$.) At every fitted value, the spread of the residuals is roughly the same with an outlying point or two in some of the plots. Hence the constant variance assumption (2.4) is satisfied.
+
+Analysis of the std residuals vs predictors/fitted values plot shows no discernible pattern so it is likely that assumption (1) on linearity is satisfied.
+
+Of these assumptions, (3.2) and (3.1) are difficult to assume. Let us examine the independence of the predictors, i.e. assumption (3.3). Besides $Cor(D,I)=0.817$ and $Cor(W,P)=0.648$, the pairwise correlations between predictors is low. So (3.3) is likely satisfied.
+
+By analyzing the Cook's distance, DFITS and Hadi's plots, we see that observations 13 and 20 is more influential than the rest, hence assumption (4) is violated.
+
+```{r}
+elect_data_5 <- subset(elect_data,select=c("V","I","D","W","GI","P","N"))
+elect_data_5$Y <- log((elect_data$V)/(1-elect_data$V)) # by default is natural log
+elect_data_5 <- subset(elect_data_5,select=c("Y","I","D","W","GI","P","N")) # drop V
+elect_model_q5 = lm(Y ~ ., data = elect_data_5)
+summary(elect_model_q5)
+```
+
+
+```{r}
+leverages <- hatvalues(elect_model_q5) # compute leverages for model Y
+elect_model_q5.residuals <- rstandard(elect_model_q5)
+
+plot(seq(1,length(elect_data$V)), leverages, xlab="Index", ylab="Leverages")
+plot(seq(1,length(elect_data$V)), elect_model_q5.residuals, xlab="Index", ylab="Residuals")
+
+qqnorm(elect_model_q5.residuals, ylab="Sample Quantiles", xlab="Theoretical Quantiles")
+qqline(elect_model_q5.residuals)
+
+plot(fitted.values(elect_model_q5), elect_model_q5.residuals, ylab="Std. Residuals", xlab="Response")
+plot(elect_data_2a$I, elect_model_q5.residuals, ylab="Std. Residuals", xlab="I")
+plot(elect_data_2a$D, elect_model_q5.residuals, ylab="Std. Residuals", xlab="D")
+plot(elect_data_2a$W, elect_model_q5.residuals, ylab="Std. Residuals", xlab="W")
+plot(elect_data_2a$GI, elect_model_q5.residuals, ylab="Std. Residuals", xlab="GI")
+plot(elect_data_2a$P, elect_model_q5.residuals, ylab="Std. Residuals", xlab="P")
+plot(elect_data_2a$N, elect_model_q5.residuals, ylab="Std. Residuals", xlab="N")
+abline(a=0, b=0, col="red")
+
+ols_plot_cooksd_bar(elect_model_q5)
+ols_plot_hadi(elect_model_q5)
+ols_plot_dffits(elect_model_q5)
+```
+
+From the above residual-index and leverage-index plots, the leverages do not follow a random pattern, since the earlier observations appear to have more leverage. The standardised residuals largely follow a random pattern with the exception of observation 20 which has quite a high standardised residual. Hence (2.1) is likely violated. 
+
+Under the normality of errors assumption (2.2), the ordered residuals should be approximately form a straight line with slope 1 and intercept 0 with the quantiles of the standard normal distribution. From examining the Q-Q plot of the standardised residuals against the standard normal distribution, we notice that the sample quantiles mostly appear to match the theoretical quantiles with the exception of the last 3 points, so again it is likely (2.2) is not satisfied.
+
+Assumption (2.3) is assumed to be true by least squares in an intercept model.
+
+The standard residuals should be uncorrelated with the predictor variables/response. As such when plotting the std. residuals against each of the predictors, we expect to see a random scatter of points, which is true for I, D, Response, GI, P and N but NOT for W (although this can likely be forgiven since there are very few points where $W=1$.) At every fitted value, the spread of the residuals is roughly the same with an outlying point or two in some of the plots. Hence the constant variance assumption (2.4) is satisfied.
+
+Analysis of the std residuals vs predictors/fitted values plot shows no discernible pattern so it is likely that assumption (1) on linearity is satisfied.
+
+Of these assumptions, (3.2) and (3.1) are difficult to assume. Let us examine the independence of the predictors, i.e. assumption (3.3). Same as with the original model, besides $Cor(D,I)=0.817$ and $Cor(W,P)=0.648$, the pairwise correlations between predictors is low. So (3.3) is likely satisfied.
+
+By analyzing the Cook's distance, DFITS and Hadi's plots, we see that observations 13 and 20 are more influential than the rest, hence assumption (4) is violated.
+
+In summary, the diagnostic plots are largely the same since $Y$ and $V$ are almost linearly related over the observed value range of $V$ in the existing dataset. 
+
+Q5b) $Y=log(V/(1-V)) \Longrightarrow e^Y=V/(1-V) \Longrightarrow V=e^Y/(1+e^Y)$
+
+Since $Y=\beta_0+\beta_1I+\beta_2D+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$, the function is $V=f(Y)=\dfrac{e^Y}{1+e^Y}$ i.e. the logistic function.)
+
+## Q6
+
+Q6a)
+
+```{r}
+leverages <- hatvalues(elect_model_q3) # compute leverages for model V
+elect_model_q3.residuals <- rstandard(elect_model_q3)
+
+plot(seq(1,length(elect_data$V)), leverages, xlab="Index", ylab="Leverages")
+plot(seq(1,length(elect_data$V)), elect_model_q3.residuals, xlab="Index", ylab="Residuals")
+
+qqnorm(elect_model_q3.residuals, ylab="Sample Quantiles", xlab="Theoretical Quantiles")
+qqline(elect_model_q3.residuals)
+
+plot(fitted.values(elect_model_q3), elect_model_q3.residuals, ylab="Std. Residuals", xlab="Response")
+plot(elect_data_2a$I, elect_model_q3.residuals, ylab="Std. Residuals", xlab="I")
+plot(elect_data_2a$D, elect_model_q3.residuals, ylab="Std. Residuals", xlab="D")
+plot(elect_data_2a$W, elect_model_q3.residuals, ylab="Std. Residuals", xlab="W")
+plot(elect_data_2a$GI, elect_model_q3.residuals, ylab="Std. Residuals", xlab="GI")
+plot(elect_data_2a$P, elect_model_q3.residuals, ylab="Std. Residuals", xlab="P")
+plot(elect_data_2a$N, elect_model_q3.residuals, ylab="Std. Residuals", xlab="N")
+abline(a=0, b=0, col="red")
+
+ols_plot_cooksd_bar(elect_model_q3)
+ols_plot_hadi(elect_model_q3)
+ols_plot_dffits(elect_model_q3)
+```
+
+```{r}
+elect_data_3c$D2 <- elect_data_3c$D2minusD1 + elect_data_3c$D1
+elect_data_q6_ind <- subset(elect_data_3c,select=c("V","I","D1","D2","W","GI","P","N"))
+cor(elect_data_q6_ind)
+```
+
+From the above residual-index and leverage-index plots, the leverages do not follow a random pattern, since the earlier observations appear to have more leverage. The standardised residuals largely follow a random pattern with the exception of observation 20 which has quite a high standardised residual. Hence (2.1) is likely violated. 
+
+Under the normality of errors assumption (2.2), the ordered residuals should be approximately form a straight line with slope 1 and intercept 0 with the quantiles of the standard normal distribution. From examining the Q-Q plot of the standardised residuals against the standard normal distribution, we notice that the sample quantiles mostly appear to match the theoretical quantiles with the exception of the last 3 points, so again it is likely (2.2) is not satisfied.
+
+Assumption (2.3) is assumed to be true by least squares in an intercept model.
+
+The standard residuals should be uncorrelated with the predictor variables/response. As such when plotting the std. residuals against each of the predictors, we expect to see a random scatter of points, which is true for I, D, Response, GI, P and N but NOT for W (although this can likely be forgiven since there are very few points where $W=1$.) At every fitted value, the spread of the residuals is roughly the same with an outlying point or two in some of the plots. Hence the constant variance assumption (2.4) is satisfied.
+
+Analysis of the std residuals vs predictors/fitted values plot shows no discernible pattern so it is likely that assumption (1) on linearity is satisfied.
+
+Of these assumptions, (3.2) and (3.1) are difficult to assume. Let us examine the independence of the predictors, i.e. assumption (3.3). Same as with the original model, besides $Cor(D_1,I)=0.87479$ and $Cor(W,P)=0.648$, the pairwise correlations between predictors is low. So (3.3) is likely satisfied.
+
+By analyzing the Cook's distance, DFITS and Hadi's plots, we see that observation 20 is more influential than the rest, hence assumption (4) is violated.
+
+```{r}
+elect_data_q6 <- elect_data_q3a
+
+elect_data_q6$Y <- log((elect_data_q6$V)/(1-elect_data_q6$V)) # by default is natural log
+elect_data_q6 <- subset(elect_data_q6,select=c("Y","I","D","W","GI","P","N")) # drop V
+elect_model_q6 = lm(Y ~ ., data = elect_data_q6)
+summary(elect_model_q6)
+```
+
+```{r}
+leverages <- hatvalues(elect_model_q6) # compute leverages for model Y
+elect_model_q6.residuals <- rstandard(elect_model_q6)
+
+plot(seq(1,length(elect_data$V)), leverages, xlab="Index", ylab="Leverages")
+plot(seq(1,length(elect_data$V)), elect_model_q6.residuals, xlab="Index", ylab="Residuals")
+
+qqnorm(elect_model_q6.residuals, ylab="Sample Quantiles", xlab="Theoretical Quantiles")
+qqline(elect_model_q6.residuals)
+
+plot(fitted.values(elect_model_q6), elect_model_q6.residuals, ylab="Std. Residuals", xlab="Response")
+plot(elect_data_2a$I, elect_model_q6.residuals, ylab="Std. Residuals", xlab="I")
+plot(elect_data_2a$D, elect_model_q6.residuals, ylab="Std. Residuals", xlab="D")
+plot(elect_data_2a$W, elect_model_q6.residuals, ylab="Std. Residuals", xlab="W")
+plot(elect_data_2a$GI, elect_model_q6.residuals, ylab="Std. Residuals", xlab="GI")
+plot(elect_data_2a$P, elect_model_q6.residuals, ylab="Std. Residuals", xlab="P")
+plot(elect_data_2a$N, elect_model_q6.residuals, ylab="Std. Residuals", xlab="N")
+abline(a=0, b=0, col="red")
+
+ols_plot_cooksd_bar(elect_model_q6)
+ols_plot_hadi(elect_model_q6)
+ols_plot_dffits(elect_model_q6)
+```
+
+From the above residual-index and leverage-index plots, the leverages do not follow a random pattern, since the earlier observations appear to have more leverage. The standardised residuals largely follow a random pattern with the exception of observation 20 which has quite a high standardised residual. Hence (2.1) is likely violated. 
+
+Under the normality of errors assumption (2.2), the ordered residuals should be approximately form a straight line with slope 1 and intercept 0 with the quantiles of the standard normal distribution. From examining the Q-Q plot of the standardised residuals against the standard normal distribution, we notice that the sample quantiles mostly appear to match the theoretical quantiles with the exception of the last 3 points, so again it is likely (2.2) is not satisfied.
+
+Assumption (2.3) is assumed to be true by least squares in an intercept model.
+
+The standard residuals should be uncorrelated with the predictor variables/response. As such when plotting the std. residuals against each of the predictors, we expect to see a random scatter of points, which is true for I, D, Response, GI, P and N but NOT for W (although this can likely be forgiven since there are very few points where $W=1$.) At every fitted value, the spread of the residuals is roughly the same with an outlying point or two in some of the plots. Hence the constant variance assumption (2.4) is satisfied.
+
+Analysis of the std residuals vs predictors/fitted values plot shows no discernible pattern so it is likely that assumption (1) on linearity is satisfied.
+
+Of these assumptions, (3.2) and (3.1) are difficult to assume. Let us examine the independence of the predictors, i.e. assumption (3.3). Same as with the original model, besides $Cor(D_1,I)=0.87479$ and $Cor(W,P)=0.648$, the pairwise correlations between predictors is low. So (3.3) is likely satisfied.
+
+By analyzing the Cook's distance, DFITS and Hadi's plots, we see that observation 20 is more influential than the rest, hence assumption (4) is violated.
+
+There is very little difference in the plots for Q6 between using $V$ as opposed to using $Y$.
+
+However, when comparing the plots with those in Q5, we see the DFITS plots in Q6 has more of the points with $DFITS>1$ (influence measure) namely 3, 13, 16, and 17. However, when compared with the DFITS plot in Q5 has slightly lower DFITS for points 3, 16 and 17, but a higher influence for observation 13. If we ignore point 20 in the Q5 and Q6 Hadi's plots, the spread of influence values is overall lower and more balanced for the Hadi's plots in Q6. The rest of the plots (stdres-index, leverage-index, QQ plot of stdres vs stdnorm, stdres vs predictors, stdres vs fitted values) seem to be largely the same however.
+
+Q6b) The Q6 analogue of Q5b: The form of the function $V=f(\beta_0+\beta_1I+\alpha_1D_1+\alpha_2D_2+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon)$ is also the logistic function $V=f(Y)=\dfrac{e^Y}{1+e^Y}$ where $Y=\beta_0+\beta_1I+\alpha_1D_1+\alpha_2D_2+\beta_3W+\beta_4(G\cdot I)+\beta_5P+\beta_6N+\epsilon$.

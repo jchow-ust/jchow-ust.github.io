@@ -1,0 +1,39 @@
+# COMP3511 PA2 (Fall 2021)
+# The input file for banker's algorithm 
+# Empty lines and lines starting with '#' are ignored
+
+
+algorithm = Safety
+strategy = smallest-index
+
+# A simple test case to test the limit of the banker's algorithm
+# num_process and num_resource are both equal to 10
+
+num_resource = 10
+num_process = 10
+
+available_vector = 10 10 10 10 10 10 10 10 10 10
+
+allocation_matrix = 
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+
+max_matrix =
+10 10 10 10 10 10 10 10 10 10
+10 10 10 10 10 10 10 10 10 10
+10 10 10 10 10 10 10 10 10 10
+10 10 10 10 10 10 10 10 10 10
+10 10 10 10 10 10 10 10 10 10
+10 10 10 10 10 10 10 10 10 10
+10 10 10 10 10 10 10 10 10 10
+10 10 10 10 10 10 10 10 10 10
+10 10 10 10 10 10 10 10 10 10
+10 10 10 10 10 10 10 10 10 10

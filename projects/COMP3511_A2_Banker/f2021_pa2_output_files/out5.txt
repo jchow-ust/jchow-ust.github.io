@@ -1,0 +1,38 @@
+=== Banker's algorithm input values ===
+algorithm = Resource-Request
+strategy = smallest-index
+num_process = 5
+num_resource = 4
+available_vector = [2,1,2,0]
+allocation_matrix = [
+0,0,1,2
+2,0,0,0
+0,0,3,4
+2,3,5,4
+0,3,3,2
+]
+max_matrix = [
+0,0,3,2
+2,7,5,0
+6,6,5,6
+4,3,5,6
+0,6,5,2
+]
+need_matrix = [
+0,0,2,0
+0,7,5,0
+6,6,2,2
+2,0,0,2
+0,3,2,0
+]
+finish_vector = [0,0,0,0,0]
+request_process_id = 2
+request_vector = [0,1,2,0]
+=== Banker's algorithm execution ===
+=== Step 0 ===
+work_vector = [2,0,0,0]
+finish_vector = [0,0,0,0,0]
+=== Banker's algorithm result ===
+request_vector = [0,1,2,0]
+CANNOT be immediately granted to process 2
+execution_order = []

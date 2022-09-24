@@ -1,0 +1,32 @@
+=== Banker's algorithm input values ===
+algorithm = Resource-Request
+strategy = smallest-index
+num_process = 5
+num_resource = 3
+available_vector = [2,3,0]
+allocation_matrix = [
+0,1,0
+3,0,2
+3,0,2
+2,1,1
+0,0,2
+]
+max_matrix = [
+7,5,3
+3,2,2
+9,0,2
+2,2,2
+4,3,3
+]
+need_matrix = [
+7,4,3
+0,2,0
+6,0,0
+0,1,1
+4,3,1
+]
+finish_vector = [0,0,0,0,0]
+request_process_id = 4
+request_vector = [4,3,2]
+=== Banker's algorithm execution ===
+Error case 1: request <= need_4 failed

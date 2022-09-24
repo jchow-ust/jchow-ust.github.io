@@ -1,0 +1,134 @@
+---
+title: "MATH3424 HW1"
+author: "Chow, Hau Cheung Jasper (hcjchow / 20589533)"
+date: "September 20, 2021"
+output: pdf_document
+---
+
+```{r}
+# Q2
+x <- c(240, 243, 250, 254, 264, 279, 284, 285, 290, 298, 302, 310, 312,
+       315, 322, 337, 348, 384, 386, 520)
+t.test(x, alternative="two.sided", mu=200, paired=FALSE, conf.level=0.98)
+```
+```{r}
+# ROUGH WORK
+# Q4a-d, Q8e, Q10f, Q10g p-value hypothesis tests:
+t_stat = 1.008
+pt(-t_stat, df=12, lower.tail=TRUE)+pt(t_stat, df=12, lower.tail=FALSE)
+
+t_stat = 1.008 # one sided upper
+pt(t_stat, df=12, lower.tail=FALSE)
+
+t_stat = 1.2405
+pt(-t_stat, df=12, lower.tail=TRUE)+pt(t_stat, df=12, lower.tail=FALSE)
+
+t_stat = 0.2498
+pt(-t_stat, df=12, lower.tail=TRUE)+pt(t_stat, df=12, lower.tail=FALSE)
+
+t_stat = -1.754 # one sided upper
+pt(t_stat, df=17, lower.tail=FALSE)
+
+t_stat = 11.45816
+pt(-t_stat, df=94, lower.tail=TRUE)+pt(t_stat, df=94, lower.tail=FALSE)
+
+t_stat = 3.932812
+pt(-t_stat, df=94, lower.tail=TRUE)+pt(t_stat, df=94, lower.tail=FALSE)
+```
+
+```{r}
+# ROUGH WORK
+# Q4
+qt(0.025,df=12,lower.tail=FALSE)
+qt(0.05,df=12,lower.tail=FALSE)
+# Q5
+qt(0.01,df=12,lower.tail=FALSE)
+```
+
+```{r}
+# ROUGH WORK
+# Q7
+x_7 <- c(1,2,3,4,4,5,6,6,7,8,9,9,10,10)
+y_7 <- c(23,29,49,64,74,87,96,97,109,119,149,145,154,166)
+fit <- lm(y_7 ~ x_7)
+y_hat_7 <- predict(fit)
+
+sum((y_7-mean(y_7))^2) # 7b
+
+sse <- sum((y_7-y_hat_7)^2)
+sse # 7c
+
+
+cor(x_7,y_7)
+cor(y_7,y_hat_7)
+```
+
+```{r}
+# ROUGH WORK
+# Q8
+qt(0.02,df=17,lower.tail=FALSE)
+```
+
+```{r}
+# Q10
+setwd("/Users/jchow/Downloads/MATH3424 R") # need to set the starting directory as this
+data <- read.table(file="Heights.txt",header=TRUE,col.names=c("Husband","Wife"))
+head(data)
+
+# 10a
+cov(data$Husband, data$Wife)
+
+# 10b
+# 2.54cm = 1 inch
+data_inch <- data/2.54
+cov(data_inch$Husband, data_inch$Wife)
+
+# 10c
+cor(data$Husband, data$Wife)
+```
+
+```{r}
+# 10d
+husband_fake <- data$Husband
+wife_5cm <- data$Husband-5
+cor(husband_fake, wife_5cm)
+```
+The above makes intuitive sense. For ANY two arbitrary data points generated in this manner, $(x_0,x_0-5), (x_1,x_1-5),$, the slope of the line connecting them is $(x_1-5-(x_0-5))/(x_1-x_0)=(x_1-x_0)/(x_1-x_0)=1$
+Since the slope of the line is 1 for ALL points generated in such a manner, the predictor and response are perfectly (positively) linear correlated. Hence we expect the correlation to be 1.
+
+```{r}
+# 10e
+heights_model = lm(data$Wife ~ data$Husband, data = data)
+out <- summary(heights_model)
+out
+```
+The fitted linear model (as seen in the above summary) is thus $Y=41.93015+0.69965X$.
+
+```{r}
+# 10f
+# Assuming two sided?
+beta_1 <- 0
+beta_1_std_err <- coef(out)[, "Std. Error"][2]
+beta_1_hat <- coef(out)[, "Estimate"][2]
+t_1 <- (beta_1_hat - beta_1)/(beta_1_std_err)
+t_1_alpha <- qt(0.05/2, df=length(data$Husband)-2, lower.tail=FALSE)
+t_1
+t_1_alpha
+```
+$n=$length of Husband column in the dataframe (aka number of datapoints)
+
+Since $|t_1|>t_{n-2,\alpha/2}=11.45816>1.985523$, we reject the null hypothesis $H_0$ at significance level $\alpha=0.05$.
+
+Conduct hypothesis test for Q10g.
+```{r}
+# 10g
+# Assuming two sided?
+beta_0 <- 0
+beta_0_std_err <- coef(out)[, "Std. Error"][1]
+beta_0_hat <- coef(out)[, "Estimate"][1]
+t_0 <- (beta_0_hat - beta_0)/(beta_0_std_err)
+t_0_alpha <- qt(0.05/2, df=length(data$Husband)-2, lower.tail=FALSE)
+t_0
+t_0_alpha
+```
+Since $|t_0|>t_{n-2,\alpha/2}=3.932812>1.985523$, we reject the null hypothesis $H_0$ at significance level $\alpha=0.05$.

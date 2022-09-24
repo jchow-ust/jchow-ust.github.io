@@ -1,0 +1,214 @@
+---
+title: "MATH3424 HW5"
+author: "Chow, Hau Cheung Jasper (hcjchow / 20589533)"
+date: "November 29, 2021"
+output: pdf_document
+---
+
+## Q1a
+
+```{r}
+setwd("/Users/jchow/Downloads/MATH3424 R")
+cancer_data <- read.csv(file="BreastCancer.txt",header=TRUE)
+#as.numeric(cancer_data$Class) # 1 = benign, 2 = malignant
+cancer_data$Class <- relevel(cancer_data$Class, ref = "benign")
+cancer_model_1 <- glm(Class ~ ., family="binomial", data=cancer_data)
+summary(cancer_model_1)
+```
+
+We notice that not all of the regression coefficients are significant at the 0.05 level; only intercept, Cl.thickness, Marg.adhesion, Bare.nuclei and Bl.cromatin are.
+
+Instead of the F-statistic, we use the G-statistic $G=D_0-D$ where if the null model is correct, $G\sim \chi^2(9)$ since the sample size $n=683$ is large.
+
+Since $G=D_0-D=884.35-102.89=781.46$ and as we can see below, the p-value is very close to 0, we reject the null hypothesis and the model is indeed significant. 
+
+```{r}
+pchisq(781.46, df=9, lower.tail=FALSE)
+rsq_1 <- 1-(102.89/884.35)
+rsq_1
+```
+
+## Q1b
+
+$\hat{\beta_1}$ is the estimated coefficient for CL.thickness. So the 95% CI is $[0.25666,0.8133682]$.
+
+```{r}
+beta_1_hat <- cancer_model_1$coefficients["Cl.thickness"]
+se_beta_1_hat <- 0.14202
+alpha <- 0.05
+z_alpha_2 <- qnorm(alpha/2, mean=0, sd=1, lower.tail=FALSE)
+
+beta_1_hat - z_alpha_2*se_beta_1_hat
+beta_1_hat + z_alpha_2*se_beta_1_hat
+
+# https://stats.idre.ucla.edu/r/dae/logit-regression/
+# this gets the CIs based on profiled log-likelihood function
+#confint(cancer_model_1, level=0.95, parm="Cl.thickness") 
+
+# this gets them with the standard errors (which we want)
+confint.default(cancer_model_1, level=0.95, parm="Cl.thickness")
+```
+
+To test $H_0:\beta_3=0$ versus $H_1:\beta_3\neq 0$, from the regression output in 1a, we notice that the p-value is 0.161688 (the z-statistic is 1.399) which is larger than our chosen significance of $\alpha=0.1$. Therefore we fail to reject the null hypothesis that $H_0:\beta_3=0$.
+
+## Q1c
+
+```{r}
+cancer_model_2 <- glm(Class ~ Cl.thickness + Cell.shape + Marg.adhesion + Bare.nuclei + Bl.cromatin,
+                      family="binomial", data=cancer_data)
+summary(cancer_model_2)
+
+# p-value for G-test with new model
+pchisq(771.78, df=5, lower.tail=FALSE)
+# R^2 for new model
+rsq_2 <- 1-(112.57/884.35)
+rsq_2
+```
+
+This time we notice all regression coefficients are significant at the 0.05 level and the AIC of the model has increased slightly from 122.89 to 124.57, but not by a significant amount, so the reduced and full model are equally effective for regression. We also observe that $G=884.35-112.57=771.78$ is slightly lower but the p-value is still very low and close to 0, so the model is also significant. The $R^2$ has decreased slightly from 0.88 to 0.87 but is still very high.
+
+```{r}
+#2*(logLik(cancer_model_2)-logLik(cancer_model_1))
+residual_dev_diff <- 112.57-102.89
+residual_dev_diff
+qchisq(0.99, df=4, lower.tail=TRUE)
+```
+
+If we use the hypothesis that $H_0:reduced suitable$, $H_1:full suitable$, then by examining the statistic $2[L(p+q)-L(p)]\sim \chi^2(q)$ we observe with $p=5,p+q=9$ that the residual deviance of reduced minus residual deviance of full is $9.68$. We notice that at significance level $\alpha=0.01$, the test statistic of 9.68 is smaller than the critical value of 13.2767, so we fail to reject $H_0$.
+
+## Q1d
+
+```{r}
+new <- data.frame(Cl.thickness=6, Cell.shape=3, Marg.adhesion=8, Bare.nuclei=2, Bl.cromatin=5)
+# can show log-odds = beta_0_hat + innerprod(new, beta_i_hat) = 1.72983
+# where: log-odds = ln(pi/(1-pi)) where pi=probability tumor is malignant
+# then to get pi need to do: pi = exp(log-odds)/(1+exp(log-odds))
+pi <- predict(cancer_model_2, new, type="response")
+1-pi
+```
+
+So the probability of this patient's tumour being benign is $1-\pi=0.1506149$.
+
+## Q1e
+
+# 4 variables
+
+```{r}
+cancer_model_3 <- glm(Class ~ Cell.shape + Marg.adhesion + Bare.nuclei + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cl.thickness + Marg.adhesion + Bare.nuclei + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cl.thickness + Cell.shape + Bare.nuclei + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cl.thickness + Cell.shape + Marg.adhesion + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cl.thickness + Cell.shape + Marg.adhesion + Bare.nuclei, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+```
+
+# 3 variables
+
+```{r}
+cancer_model_3 <- glm(Class ~ Marg.adhesion + Bare.nuclei + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~  Cell.shape + Bare.nuclei + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cell.shape + Marg.adhesion + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cell.shape + Marg.adhesion + Bare.nuclei, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+# ========
+cancer_model_3 <- glm(Class ~ Cl.thickness + Bare.nuclei + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cl.thickness + Marg.adhesion + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cl.thickness + Marg.adhesion + Bare.nuclei, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+# ========
+cancer_model_3 <- glm(Class ~ Cl.thickness + Cell.shape + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cl.thickness + Cell.shape + Bare.nuclei, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+# ========
+cancer_model_3 <- glm(Class ~ Cl.thickness + Cell.shape + Marg.adhesion, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+```
+
+# 2 variables
+
+```{r}
+cancer_model_3 <- glm(Class ~ Cl.thickness + Cell.shape, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~  Cl.thickness + Marg.adhesion, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cl.thickness + Bare.nuclei, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cl.thickness + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+# ========
+cancer_model_3 <- glm(Class ~ Cell.shape + Marg.adhesion, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cell.shape + Bare.nuclei, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cell.shape + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+# ========
+cancer_model_3 <- glm(Class ~ Marg.adhesion + Bare.nuclei, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Marg.adhesion + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+# ========
+cancer_model_3 <- glm(Class ~ Bare.nuclei + Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+```
+
+# 1 or 0 variables
+
+```{r}
+cancer_model_3 <- glm(Class ~ Cell.shape, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Marg.adhesion, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Bare.nuclei, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Bl.cromatin, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+cancer_model_3 <- glm(Class ~ Cl.thickness, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+# ========
+cancer_model_3 <- glm(Class ~ 1, 
+                      family="binomial", data=cancer_data)
+AIC(cancer_model_3)
+```
+
+As we can see, the 4-variable model with the lowest AIC (132.7431) was with variables "Cl.thickness + Cell.shape + Bare.nuclei + Bl.cromatin." The 3-variable model with lowest AIC (148.2462) was with variables "Cl.thickness + Cell.shape + Bare.nuclei." The 2-variable model with lowest AIC (177.3853) was with variables "Cell.shape + Bare.nuclei." The 1-variable model with lowest AIC (271.5863) was with variable "Cell.shape". As we can see, the more variables we drop, the higher the AIC. In fact, out of all subset models of the variables "Cl.thickness + Cell.shape + Marg.adhesion + Bare.nuclei + Bl.cromatin," the one with the lowest AIC (124.57) is the model with all 5 of those variables, i.e. the model in part (c).

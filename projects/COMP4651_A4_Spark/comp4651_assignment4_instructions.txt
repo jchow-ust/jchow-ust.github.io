@@ -1,0 +1,66 @@
+1. Download and install Flintrock (pip3 install Flintrock) (other methods ok)
+
+2. Get access key from AWS Learner (Modules -> Learner Lab Foundational Services -> Start Lab -> AWS Details -> click AWS CLI, copy the aws_access_key, aws_secret_access_key, aws_session_token. Use vim and save this to ~/.aws/credentials
+
+3.
+
+https://tech-morty.medium.com/apache-spark-and-hadoop-on-an-aws-cluster-with-flintrock-part-2-34f4cdb6cae3
+
+https://alexioannides.com/2016/08/18/building-a-data-science-platform-for-rd-part-2-deploying-spark-on-aws-using-flintrock/
+
+`flintrock configure`
+Change spark version to 3.1.2 (2.4.7 yields Error: Could not access Spark download. Maybe try a more recent release?)
+key-name = 4651_newkey
+identity-file: /Users/jchow/4651_newkey.pem
+instance-type: m5.large
+security-groups: none (unchanged, allow all traffic)
+
+4. install certifi to avoid SSL CERTIFICATE_VERIFY_FAILED
+https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error
+`
+pip3 install certifi
+/Applications/Python\ 3.9/Install\ Certificates.command
+`
+
+5. Launch cluster with `flintrock launch test-cluster` (need to be in jchow/flintrock)
+check that we can see them in EC2 dashboard (Instances)
+launches a cluster called "test-cluster" (or any other cluster name)
+
+6. Go to Web UI at address http://<master_ip_address>:8080
+-- on EC2 dashboard for instance, we see that there are 2 instances test-cluster-slave and test-cluster-master. Copy the master's ip address
+
+7. login with `flintrock login test-cluster`
+
+8. can use pyspark commands or whatever, then destroy cluster with `flintrock destroy cluster`
+
+8. Create account with Databricks Community
+Databricks Community signup
+First name: J
+Last name: Chow
+Company: N/A
+Company email: hcjchow@connect.ust.hk (regular) / chow.jasper@gmail.com (community)
+Title: N/A
+Phone number: not provided
+password: Databricksgoogol2+
+
+9. Login at https://community.cloud.databricks.com/login.html
+
+10. Follow steps to import a notebook:
+https://docs.databricks.com/notebooks/notebooks-manage.html#import-a-notebook
+
+Edit the notebook, and export if need be.
+
+11. Create a new cluster (leave all configurations as default for this assignment):
+https://docs.databricks.com/clusters/create.html
+
+12. Attach imported notebooks to the cluster (need to wait for cluster to start, may take a while). Need to open the specified notebook
+https://docs.databricks.com/notebooks/notebooks-manage.html#attach
+
+13. Download shakespere.txt from the link in warmup.ipynb and upload it to DBFS (no need to click 'Preview Table or whatever' buttons, as long as we see checkmark and "file has been uploaded to <location>", we're good
+
+14. Attach word_count.ipynb and log_analysis.ipynb to cluster, download apache.log and add to data, run the notebooks, export both ipynb and .py files.
+
+13. detach all 3 notebooks:
+https://docs.databricks.com/notebooks/notebooks-manage.html#detach-a-notebook-from-a-cluster
+
+14. destroy cluster

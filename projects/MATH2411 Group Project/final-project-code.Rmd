@@ -1,0 +1,116 @@
+---
+title: "MATH 2411 Final Project"
+output:
+  html_document:
+    df_print: paged
+authors: CHOI, Ho Chung; CHOW, Hau Cheung Jasper; LIN, Chuan-en; YANG, Guang
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(broom)
+```
+
+
+## Methods and Results
+Our data (csv) consists of tens years of NBA playoffs data, from 2010 to 2019. For each year, we have 16 rows representing each team that made it in the playoffs for the given year. The teams are also ranked in descending order, from the team with the most wins to the team with the least wins. For each row entry, we have various basketball metrics relating to the team's overall playoffs performance, such as offensive rating, assist percentage, and so on. Y is the variable corresponding to the number of wins and data_x stores the various performance metrics; but we are only concerned with the "Offensive Rating (OffRtg)" and "Player Impact Estimate (PIE)" performance metrics.
+
+```{r}
+# Load data
+data <- read.csv("basketball-data.csv")
+data_x <- (data[,c(5, 18)]) # X: "Offensive Rating" and "Player Impact Estimate"
+y <- (data[,c(3)]) # Y: "Wins"
+
+max(data_x$Player.Impact.Estimate)
+min(data_x$Player.Impact.Estimate)
+```
+
+Compute estimated Pearson's correlation coefficient for (OffRtg, Wins) and (PIE, Wins).
+Further computed Bartlett's and Shapiro-Wilk test to check for validity of assumptions, and computed nonparametric correlation coefficients.
+
+```{r}
+# Iterate through each X and compute Pearson's correlation coefficient
+for (i in names(data_x)) {
+  print(i)
+  x <- as.vector(unlist(data_x[i])) # Flatten
+  p <- cor.test(x, y)
+  print(p)
+}
+
+
+# Run Bartlett's test to check for homogeneity of variance
+print(bartlett.test(data_x$Player.Impact.Estimate, y))
+
+# Run Shapiro-Wilk test to check if samples came from normally distributed population
+print(shapiro.test(data_x$Player.Impact.Estimate))
+print(shapiro.test(y))
+
+# Run Spearman and Kendall correlation coefficient tests (non parametric) to get around violated normality assumption
+print(cor.test(data_x$Player.Impact.Estimate, y, method="spearman"))
+print(cor.test(data_x$Player.Impact.Estimate, y, method="kendall"))
+#qqplot(data_x$Player.Impact.Estimate, y)
+```
+
+Perform linear regression on PIE (X) and Wins (Y). This linear model is Figure 1.
+
+```{r}
+# Linear regression
+linear <- lm(y ~ data$Player.Impact.Estimate, data = data)
+summary(linear)
+linear.diag.metrics <- augment(linear) # Compute metrics for regression diagnostics used later on
+ggplot(linear.diag.metrics, aes(data$Player.Impact.Estimate, y)) +
+  geom_point() +
+  stat_smooth(method = lm, se = FALSE) +
+  geom_segment(aes(xend = data$Player.Impact.Estimate, yend = .fitted), color = "red", size = 0.3)
+```
+
+From our linear regression model, we have the following linear formula: [Wins] = 0.82859 * [PIE] -29.50336. Our Coefficient of Determination (R^2) is around 0.45.
+
+Nonetheless, from class, we learned that linear regression is built on top of several assumptions. Therefore, to evaluate the validity of our linear regression model, we checked the validity of each of the assumptions. The assumptions are: (1) Linearity, (2) Normality, and (3) Homogeneity of variance. Together, these diagnostic plots constitute Figure 2.
+
+```{r}
+# Checking linear regression assumptions
+par(mfrow = c(2, 2))
+plot(linear)
+```
+
+Calculate the 99% confidence intervals for each coefficient in our linear model and the 99% prediction interval, and graph the results in Fig. 3.
+
+```{r}
+print(confint(linear,level=0.99))  # calculate confidence intervals for alpha, beta
+
+# calculate prediction interval of Y (number of wins) at X (PIE) = predict_value
+predict_value <- 50.0
+alpha <- 0.01  # chosen significance level
+n <- length(data_x$Player.Impact.Estimate)  # number of data points
+
+# fittedy is a vector calculated to be the fitted values of Y, using the linear model Y = alpha + beta*X
+fittedy <- summary(lm(y~data_x$Player.Impact.Estimate))$coefficients[1,1] + summary(lm(y~data_x$Player.Impact.Estimate))$coefficients[2,1]*data_x$Player.Impact.Estimate
+
+# mean squared error = sum of squared residuals / (n-2) (to be unbiased)
+mse <- sum((y-fittedy)^2)/(n-2)
+
+sxx <- sum((data_x$Player.Impact.Estimate - mean(data_x$Player.Impact.Estimate))^2)
+#alternative method to calculate sxx:
+#sum(data_x$Player.Impact.Estimate^2) - n*(mean(data_x$Player.Impact.Estimate))^2
+
+# predicted value of y
+py <- summary(lm(y~data_x$Player.Impact.Estimate))$coefficients[1,1] + summary(lm(y~data_x$Player.Impact.Estimate))$coefficients[2,1]*predict_value
+
+# from the formula in the lecture nodes
+# first value is lower bound of prediction interval, second is upper bound
+py - qt(alpha/2,n-2,lower.tail=FALSE)*(mse)^0.5*(1 + 1/n + ((predict_value - mean(data_x$Player.Impact.Estimate))^2/sxx))^0.5
+py + qt(alpha/2,n-2, lower.tail=FALSE)*(mse)^0.5*(1 + 1/n + ((predict_value - mean(data_x$Player.Impact.Estimate))^2/sxx))^0.5
+
+# graph the CI and PI along with our model
+wt_pred = predict(linear,interval = "prediction",level=0.99)
+data = cbind(data, wt_pred)
+pi_plot = ggplot(data, aes(data_x$Player.Impact.Estimate, y))+ geom_point() +
+geom_line(aes(y=lwr), color = "red", linetype = "dashed")+ geom_line(aes(y=upr), color = "red", linetype = "dashed")+ geom_smooth(method=lm, se=TRUE)
+pi_plot
+
+
+```
+
+

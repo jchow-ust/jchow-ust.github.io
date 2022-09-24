@@ -1,0 +1,152 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2513
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;\f2\fswiss\fcharset0 Helvetica-Oblique;
+}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red52\green52\blue52;\red230\green233\blue234;
+}
+{\*\expandedcolortbl;;\csgray\c0;\cssrgb\c26667\c26667\c26667;\cssrgb\c92157\c92941\c93333;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf2 COMP2611 project specs\
+\
+\pard\pardeftab720\partightenfactor0
+
+\fs32 \cf3 \cb4 \expnd0\expndtw0\kerning0
+\
+\ul maze_bitmap\ulnone  is a 1d array of bytes of size 26x26\
+\
+Main:\
+1. Request game parameters by calling 
+\f1\b input_game_params
+\f0\b0  which asks for number of enemies to be stored in $v0. This is copied to $t0.\
+2. Upon returning from function, $t0 contains the address of the memory variable \ul enemy_num\ulnone . The variable\'92s contents is saved to be = the value given in 
+\f1\b input_game_parameters\
+
+\f0\b0 3. Game screen is created and startup sound is played once. 
+\f1\b init_game
+\f0\b0  called.\
+4. In 
+\f1\b init_game
+\f0\b0 : reset any movement of player/buffered movement of player. Then in 
+\f2\i \ul ig_start
+\f0\i0 \ulnone : create a game object (sys call ID 103) of type player. Its ID is set to 0 and set initial position to be x=96,y=384. This initial location is also saved in \ul player_locs\ulnone : an array of size 2 which contains (x,y) of player object\
+5. # create bullets | Create bullet object with initial location (1000,1000). Location of bullet stored in \ul bullet_locs\ulnone : array of size 2\
+5. # create specified number of enemys | use sys call ID 108 to create \'93\ul enemy_num\'94\ulnone  number of enemies using unique IDs in \ul enemy_ids=[0,1]\ulnone \
+6. # create broken home object and hide | create a broken home object - used when player base has been hit and store it at 1000,1000. Then refresh the screen.
+\f1\b \
+\
+\
+game_loop\
+
+\f0\b0 \'97 Get keyboard input.\
+\'97 Check value of \ul game_over\ulnone  variable. If = 1 means game over, if so create game_over object, then refresh screen, wait 30ms then restart game_loop).\
+\'97 If not game over, check if killed requisite number of enemies. If yes display winning text \ul game_win_text\ulnone  at coordinates specified by array \ul game_win_locs\ulnone . Then refresh screen, wait 30ms and restart game_loop.\
+\'97 Call 
+\f1\b game_tank_shoot
+\f0\b0  then 
+\f1\b game_move_user
+\f0\b0  then 
+\f1\b game_move_enemy1
+\f0\b0 . If enemy_num=1 then go to 
+\f2\i \ul game_enemy_shoot
+\f0\i0 \ulnone , else also call 
+\f1\b game_move_enemy2
+\f0\b0   before going to 
+\f2\i \ul game_enemy_shoot\
+If 1 enemy: move shoot\
+If 2 enemies: move move shoot shoot
+\f0\i0 \ulnone \
+\'97 Have enemy with enemyid 0 shoot player. If that is only living enemy, refresh screen wait 30ms, and restart game_loop. If not only living enemy (2 enemies on field) have them both shoot (enemy id 0 then enemy id 1) before refresh screen wait 30ms then restart game loop.\
+\
+
+\f1\b game_move_enemy1/2
+\f0\b0 \
+Check if enemy1/2 is alive. If yes then move according to sys call 109. If not do nothing. \
+\
+\
+
+\f1\b enemy_shoot\
+
+\f0\b0 Have enemy shoot something. $v0=1 if enemy bullet collides with player or home, 2 if collides with player input, $v1=1 or 2 denotes number of brick wall hit by enemy bullet, $a0, $a1 store indices of the brick walls being hit in the array maze_bitmap\
+If $v0=1, set game_over = 1 and exit\
+If $v0=2, es_bullet_crash means for player remaining_bullet+=1 (since when we shot the bullet remaining_bullet=0 for player)\
+Then $v1=number of brick walls hit by enemy bullet. If $v1 = 0 then exit. If $v1=1  edit maze_bitmap[$a0] to change from brick tile (1) to empty tile (0). If $v1=2 then also edit for maze_bitmap[$a1]  Once we\'92re done jump back to $ra\
+\
+
+\f1\b process_tank_shoot
+\f0\b0 \
+If remaining_bullets=0, call bullet_move\
+Else:\
+If input_key is not 32 (space), exit process (we are not shooting)\
+If yes, call 
+\f1\b new_bullet
+\f0\b0 \
+A0,a1 = updated bullet location.\
+a2=bullet half size\
+Call check_bullet_collision(a0,a1,a2)\
+\
+
+\f1\b new_bullet
+\f0\b0 \
+play bullet shoot sound, set remaining_bullet=0, $s0=bullet id let midpoint of player tank location be in $s1, $s2\
+Set bullet_dir = player_dir\
+Change direction of newly created bullet object with id bullet_id to bullet_dir\
+Then call nb_X_bullet to calculate the location of the top left corner of the bullet and store into bullet_locs. Set $v0, $v1 to be new location bullet\
+# up bullet\
+S1, s2 = midpoint of tank, s3=bullet_half_size=3\
+Calculate the location of bullet for each direction and store it in bullet_locs, and set it to $v0, $v1
+\f1\b \
+\
+bullet_move
+\f0\b0 \
+Get bullet_location(x,y) stored in ($s1, $s2) and bullet_speed ($a3) and bullet_dir\
+Move bullet up/down/left/right according to bullet_dir.\
+If horizontal left movement:\
+Updated coordinates (x\'92,y\'92)=(x\'92-bullet_speed = $s1-$a3,y=$s2)\
+Save updated coordinates in $v0, $v1\
+\
+\
+
+\f1\b check_bullet_collision(x,y,size)\
+check_hit_enemy(x,y)\
+process_collision(type,index)
+\f0\b0 \
+
+\f1\b process_move_input
+\f0\b0 \
+$t6=move_iteration address\
+$t5=move_iteration\
+\
+
+\f1\b hit_border(x,y,size)
+\f0\b0 \
+Check whether a square object with top left coordinate (x,y) and height=length=size has hit the border of the maze\
+\
+
+\f1\b get_bitmap_cell
+\f0\b0 \
+\
+move_player_up/down/left/right\
+t0=player_size address\
+S3, s4 = player width, height\
+T2 = maze height\
+T3 = player speed\
+S0, s1=player_locs\
+Since coords from \{0,1,\'85maze_height-1\} y coord of lower border is (height-1)\
+t9=s1+s4=ylocation+playerheight\
+t4=1 iff t2<t9 = mazeheight-1<ylocation+playerheight\
+If t4=0 go to mpd_check_path1 (valid move). \
+\'97 Add player speed to ylocation. s1=new y_loc. a0=x_loc. Make s1=new y_loc+playerheight-1 to check if bottom most coordinate of players is in wall. Call get_bitmap_cell to see if it is outside the maze. Index is returned in v1\
+\'97 a0=s0=x+16\
+\'97 a1=s1+s4-1=new y_loc+playerheight-1\
+\'97 check bitmap cell to see if right half collides with any 16-wide object. If no, the move and save new y_loc to 4($s2), then set new object location, then exit\
+If t4=1 don\'92t move, set $v0=0\
+# DOWN\
+		# a0=x, a1=y+speed+height-1	\
+		# a0=x+16, a1=y+height+speed-1\
+s1=y-speed\
+A0=s0\
+a1=s1\
+\
+a0=s0+16\
+a1=s1}

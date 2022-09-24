@@ -1,0 +1,23 @@
+# COMP3511 PA2 (Fall 2021)
+# The input file for banker's algorithm 
+# Empty lines and lines starting with '#' are ignored
+
+algorithm = Resource-Request
+strategy = smallest-index
+num_resource = 3
+num_process = 5
+available_vector = 2 3 0
+allocation_matrix = 
+0 1 0
+3 0 2
+3 0 2
+2 1 1
+0 0 2
+max_matrix = 
+7 5 3
+3 2 2
+9 0 2
+2 2 2
+4 3 3
+request_process_id = 4
+request_vector = 4 3 2

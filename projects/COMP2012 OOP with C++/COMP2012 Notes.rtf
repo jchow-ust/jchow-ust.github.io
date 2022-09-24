@@ -1,0 +1,2276 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2513
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;\f2\froman\fcharset0 Times-Roman;
+\f3\froman\fcharset0 Times-Bold;\f4\fswiss\fcharset0 Helvetica-Oblique;\f5\fswiss\fcharset0 Helvetica-BoldOblique;
+\f6\fnil\fcharset0 Menlo-Regular;\f7\fnil\fcharset0 Menlo-Bold;\f8\fnil\fcharset0 Menlo-Italic;
+\f9\fswiss\fcharset0 ArialMT;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red127\green0\blue85;\red42\green0\blue255;
+\red0\green80\blue50;\red0\green0\blue192;\red63\green127\blue95;\red255\green255\blue255;\red158\green0\blue49;
+\red246\green247\blue249;\red26\green26\blue26;\red15\green112\blue1;\red83\green83\blue83;\red51\green110\blue109;
+\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\csgenericrgb\c49804\c0\c33333;\csgenericrgb\c16471\c0\c100000;
+\csgenericrgb\c0\c31373\c19608;\csgenericrgb\c0\c0\c75294;\csgenericrgb\c24706\c49804\c37255;\cssrgb\c100000\c100000\c100000;\cssrgb\c69020\c0\c25098;
+\cssrgb\c97255\c97647\c98039;\cssrgb\c13333\c13333\c13333;\cssrgb\c0\c50196\c0;\cssrgb\c40000\c40000\c40000;\cssrgb\c25098\c50196\c50196;
+\csgray\c0;}
+\deftab720
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b\fs24 \cf0 ##############\
+\ul COMP2012\ulnone \
+##############
+\f1\b0 \
+\
+\
+Uniform initialization - means it can be used to initialise any variable\
+
+\f0\b Word word1 = word2;
+\f1\b0  // initialise an object of type Word by calling the copy constructor with parameter word2\
+
+\f0\b Word w(); 
+\f1\b0 // could refer to calling a default constructor, or declaring a function w() with no arguments that returns a Word object, so \ul it raises compile error\ulnone \
+So instead 
+\f0\b Word word1\{word2\}; Word w\{\};
+\f1\b0 \
+\
+() initialiser cannot be used to default initialization of non static class data members (otherwise compile error). \{\} is ok. (non static data members are ones that are different for each class object)\
+\
+
+\f0\b \ul Review: function overloading
+\f1\b0 \ulnone \
+Multiple functions same name - must have different function signature (eg constructor) - CANNOT have same argument sets and name but different return types\
+Operators are often overloaded (+ operator for ints, floats, etc)\
+\
+
+\f0\b class Word\
+\{private:\
+int frequency; char* str;\
+public:\
+void set() const \{cin >> str;\} 
+\f1\b0 // raises error here NOT because this is a const function and str, a data member, is modified, but \ul because cin tries to dereference str, a char pointer, even though it was not initialised properly and is pointing to somewhere undefined, runtime error\
+
+\f0\b \ulnone void set() (int k = 5)\{frequency =k;\}\
+\};\
+int main()\{\
+Word movie;\
+movie.set(); 
+\f1\b0 // if this is run, since the first function is a const function, and since
+\f0\b  movie
+\f1\b0  is a non const object, and const functions can be executed by non const objects and const objects, non const functions can only be called by non const objects, the non const function is more appropriate
+\f0\b \
+\}
+\f1\b0 \
+\
+If we have default values in a function declaration (say in a header file) do not write them in a different file (eg source file where said function is actually defined)\
+\
+\
+Data members of a class are initialised inside the body of its constructors\
+Preferred to initialise via 
+\f0\b \ul Member Initialiser List
+\f1\b0 \ulnone \
+- works well for data members of user-defined types\
+
+\f2 \cf2 \expnd0\expndtw0\kerning0
+\
+
+\f3\b \ul Using Member Initialiser List
+\f2\b0 \ulnone \
+\
+
+\f0\b \cf0 \kerning1\expnd0\expndtw0 class Word_Pair\{\
+private: Word w1; Word w2;\
+public:\
+Word_Pair(const char *s1, const char *s2) : w1(s1, 5), w2(s2) \{\}\
+Word_Pair(const char *s1, const char *s2) \{w1 = x; w2 = y;\}\
+\};
+\f1\b0 \
+In option 1, w1 and w2 are initialised by the conversion constructor\
+
+\f0\b Word(const char *, int = 1, char = \'93E\'94) 
+\f1\b0 \
+In option 2, memberwise assignment will fail to account for dynamically allocated data members and produce an error, but a MIL will always dynamically allocate new memory\
+\
+
+\f0\b class Word\{\
+private:\
+char lang;\
+char *str;\
+int freq;\
+public: Word() : lang\{\'91E\'92\}, freq(0), str(nullptr\} \{\}; 
+\f1\b0  // can also use braces for initialisation\
+
+\f0\b \};
+\f1\b0  // when default constructor is called, sets lang to \'91E\'92, str to nullptr, freq to 0, \ul aka in the order in which the data members are defined\ulnone , before the actual code of the constructor is defined\
+\
+\ul Initialisation of const or reference members must be used using member initialiser list if they don\'92t have default initialisers\ulnone  - cannot have reference that points to nothing, or const that has no value\
+\
+
+\f0\b class Example\{\
+private:\
+const int const_m = 3;\
+int & ref_m;\
+public:\
+Example() \{\}\
+Example(int c, int &r) : const_m(c), ref_m(r) \{\}\
+\};\
+int main()\{\
+int b=55; Example y(10, b);  y.print();\
+\}\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\i\b0 \cf0 \ul Initialiser list takes preference over default initialise\ulnone r 
+\f1\i0 so in second line, compiler uses the second constructor over the default, and calls initialiser list
+\f0\b \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Initialisation of const and reference members without MIL\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 class Word\{\
+private:\
+const char lang; int freq; char *str;\
+public:\
+Word() : lang(\'93E\'94), freq(0), str(nullptr) \{\};\
+Word(const char*s, int f = 1, char g = \'93E\'94)\{lang = g;\}\
+\};\
+int main()\{Word x (\'93hkust\'94)\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 \
+\pard\pardeftab720\partightenfactor0
+\cf0 This doesn\'92t work since \'91lang\'92 must be given an explicit value, being a const. If we say \'91lang=g\'92 this also doesn\'92t work since g may not be a constant and it would violate our agreement\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 \ul Private utility function\
+\ulnone \
+class Word\{\
+private:\
+int frequency; char *str;\
+void set(int f, const char *s)\
+public:\
+Word(const char*s, int k = 1)\{\}\
+Word(const Word &w)\{\}\
+\};
+\f1\b0 \
+Both constructors have very similar function - initialisation of the class data members frequency and str, and both call the private utility function set so that no functions outside of the class can use \'91set\'92\
+\
+
+\f0\b \ul Delegating constructor\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 class Word\{\
+private:\
+int frequency; char *str;\
+public:\
+Word(const char*s, int f = 1)\{cout << \'93conversion\'94\}\
+Word(const Word &w) : Word(w.str, w.frequency) \{cout << \'93copy\'94\}\
+\};\
+int main()\{\
+Word movie(\'93Titanic\'94); movie.print() 
+\f1\b0 // output \'91conversion\'92
+\f0\b \
+Word song(movie); song.print() 
+\f1\b0 // output \'91conversion\'92 then \'91copy\'92 since copy constructor delegates to conversion, so conversion body executed first, then copy body
+\f0\b \
+Word ship=movie; ship.print() 
+\f1\b0 // implicit call to copy constructor, so output \'91conversion\'92 then \'91copy\'92 since copy constructor delegates to conversion, so conversion body executed first, then copy body
+\f0\b \
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 So the copy constructor delegates all the work to the conversion constructor - \ul this will only work if the only thing in the member initialiser list is a constructor of the class (but can have nested delegating constructors)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 Garbage collection and destructors
+\f1\b0 \ulnone \
+\ul Review: \ulnone Memory layout of a running program - program codes and global static data (unchanged) and (stack \'97> and <\'97 heap) - local variables are constructed and destroyed from the runtime stack. Dynamically created objects remain after function/block terminates, and it is user\'92s responsibility to return it to heap using keyword 
+\f0\b delete
+\f1\b0 .\
+\ul Garbage is storage that is part of a running program but cannot be accessed - aka memory leak\
+\
+
+\f0\b Destructor X::~X() 
+\f1\b0 \ulnone // for class X\
+- Invoked automatically when object goes out of a scope\
+- \ul Takes no arguments, no return type\ulnone \
+- Does not actually release the memory - just performs termination housekeeping aka prepares the object for deletion\
+- Only one destructor for a class. If not given, will be given to you \ul which does nothing\ulnone , so dynamically allocated objects/objects with dynamic data members we need to write our own destructor.\ul  It simply tells the program that the memory the destroyed object previously claimed is re-available\ulnone \
+\
+
+\f0\b \ul User-defined destructor\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 class Word\{\
+private:\
+int frequency; char*str;\
+public:\
+Word() : frequency(0). str(nullptr) \{\};\
+~Word() \{delete[]str;\}\
+\};\
+int main()\
+\{\
+Word*p=new Word \{\'93Titanic\'94\}\
+Word*x = new Word[5];
+\f1\b0 \
+
+\f0\b delete p; 
+\f1\b0  // calls destructor of p\
+
+\f0\b delete []x;  
+\f1\b0 // delete calls the destructor of all elements of the array x, in reverse order\
+
+\f0\b \}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 Using just 
+\f0\b delete
+\f1\b0  on a dynamically allocated array, even with length 1, will result in \ul undefined behaviour\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 Bugfixing with default member wise assignment
+\f1\b0 \
+
+\f0\b \ulnone class Word\{\
+private:\
+int frequency; char*str;\
+public:\
+Word() : frequency(0). str(nullptr) \{\};\
+~Word() \{delete[]str;\}\
+\};\
+void Bug(word&x) \{Word bug(\'93bug\'94, 4); x=bug;\}\
+int main()\
+\{\
+Word movie \{\'93Titanic\'94\};\
+Bug(movie);
+\f1\b0 \
+
+\f0\b return 0;
+\f1\b0 \
+
+\f0\b \}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 Here,
+\f0\b  \'93x=bug;\'94
+\f1\b0  is just member wise assignments. Since originally x.str points to location a, and bug.str points to location b, the assignment causes x to point to b (\ul memory leak\ulnone  since a can no longer be accessed).\
+Then since 
+\f0\b bug 
+\f1\b0 is going out of scope at the end of function \'91Bug\'92, the destructor of 
+\f0\b bug
+\f1\b0  is called right after, so the dynamically allocated memory of 
+\f0\b bug.str 
+\f1\b0 is freed, even though it still can be accessed by 
+\f0\b x
+\f1\b0 , aka 
+\f0\b movie
+\f1\b0 ! This is \ul dangling pointer\ulnone . \
+Then when 
+\f0\b main() 
+\f1\b0 goes out of scope, we call the destructor for 
+\f0\b movie
+\f1\b0  so 
+\f0\b movie.str
+\f1\b0  will be deleted - even though it was already deleted! This results in \ul segfault aka runtime error.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 Summary of compiler generated (implicit) member functions
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ulnone - default constructor - only if no other constructors defined\
+- default copy constructor - allocates memory for the new object \ul and \ulnone does memberwise assignment for each data member\
+- default copy/assignment operator - no new memory generated, does member wise assignment for each data member\
+- default move constructor (C++11)\
+- default move assignment operator (C++11)\
+- default destructor\
+\
+C++11 allows us to explicitly generate or not generate the above functions with 
+\f0\b =default 
+\f1\b0 and 
+\f0\b =delete
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 Word()=default; 
+\f1\b0 // still want the default constructor\
+
+\f0\b Word(const Word&w)=delete; 
+\f1\b0 // means that we don\'92t want words to be copied. Do not give me the default copy constructor\
+\
+
+\f0\b \ul Order of Construction and Destruction
+\f1\b0 \ulnone \
+
+\f0\b class Clock\{\
+public:\
+Clock() \{cout << \'93c constructor\'94;\}\
+~Clock() \{cout << \'93c destructor\'94;\}\
+\};\
+\
+class Postoffice\{\
+Clock clock;\
+public:\
+Postoffice() \{cout << \'93p constructor\'94;\}\
+~Postoffice() \{cout << \'93p destructor\'94;\}\
+\};\
+int main()\{Postoffice x;\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 \
+\'93\'94\'94\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\i \cf0 \ul output:
+\f1\i0 \ulnone \
+
+\f4\i C constructor\
+P constructor\
+P destructor\
+C destructor\
+\'93\'94\'94
+\f1\i0 \
+\
+Before executing the body of the constructor of Postoffice, what happens in the background, the constructor of each of Postoffice\'92s data members is called IN THE ORDER THEY ARE DECLARED IN THE CLASS, then the constructor\'92s function body is called\
+For the destructor, first the function body of 
+\f0\b ~Postoffice
+\f1\b0  is run, then its data members have their destructors called (\ul opposite direction of constructor)\
+It is our responsibility to ensure default constructors of all the data members exist.\
+\
+If object A owns object B, then object A has a pointer pointing to B. A is responsible for ensuring B is properly disposed of. B\'92s constructor is NOT called in the MIL implicitly.\ulnone \
+\
+As with \ul member initialiser list,\ulnone  the data members of an object are initialised in the same order they appear in the class definition of the object\
+E.g.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 class PostOffice\{\
+Room r;\
+Clock c;\
+public:\
+PostOffice()\{\}\
+\};
+\f1\b0 \
+Then room constructor called first, then clock constructor, then postoffice constructor body.\
+\
+
+\f0\b class Clock\{\
+private:\
+int HHMM;\
+public:\
+Clock() \{cout << \'93c constructor\'94;\}\
+Clock(int hhmm) : HHMM(hhmm)\{cout << \'93c constructor at \'93 << HHMM << endl;\}\
+~Clock() \{cout << \'93c destructor at \'94 << HHMM << endl;\}\
+\};\
+\
+class Postoffice\{\
+Clock clock;\
+public:\
+Postoffice() \{cout << \'93p constructor\'94; clock = Clock(800);\}\
+~Postoffice() \{cout << \'93p destructor\'94;\}\
+\};\
+int main()\{Postoffice x;\}\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 \'93\'94\'94\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul output:\ulnone \
+C constructor // initialise data member \'91clock\'92 first\
+P constructor\
+C constructor 800 // explicit call to constructor\
+C destructor 800 // temp object \'91clock(800)\'92 went out of scope so destructor auto called\
+P destructor\
+C destructor 800 //  object \'91x\'92 went out of scope so first call function body (aka P destructor output in the line above) then call destructor on each of its data members, aka \'91clock\'92\
+\'93\'94\'94\
+\
+If copy constructor is defined to take an object of itself type by value, it will need to create a copy of itself, which is done by calling the copy constructor. So this creates an infinite loop. Same applies for putting \'93delete this\'94 in the destructor \
+\
+
+\f0\b \ul Inheritance
+\f1\b0 \ulnone \
+- create classes with similarities\
+- main idea: find common data members and member functions of Student and Teacher and put them into a \ul parent class,\ulnone  called UPerson, and apply inheritance mechanism\
+\
+#ifndef UPERSON_H \
+#define UPERSON_H\
+Enum Department\{CBME, CIVL. CSE, ECE, IELM, MAE\}\
+\
+\
+
+\f0\b #ifndef STUDENT_H. /
+\f1\b0 * File uperson.h*/
+\f0\b \
+#define STUDENT_H
+\f1\b0 \
+\
+
+\f0\b #include \'93uperson.h\'94 
+\f1\b0 // must include its parent class\
+
+\f0\b class Student : public UPerson
+\f1\b0  // inherits from UPerson in a public manner
+\f0\b \
+\{\
+private:\
+float GPA;\
+public:\
+Student(string n, Department d, float x) : UPerson(n,d), GPA(x) \{\}\
+float get_GPA () const \{return GPA;\}\
+\};\
+#endif
+\f1\b0 \
+The member initialiser list can call the constructor of the parent class to initialise name and department to n and d.\
+\
+Every time we build a child or derived class we must include all of its parent classes with a preprocessing directive\
+
+\f0\b #include \'93uperson.h\'94 
+\f1\b0 finds person.h file in the same folder and includes all of its material (like copy paste)\
+\
+To prevent declaring parent class the same time, we need 
+\f0\b #ifndef UPERSON_H 
+\f1\b0 (If this class is not defined; an include guard) to ensure that it is declared only once\
+- in general put guards on all header files in case we want to extend that class later\
+\
+In general the constructor of a derived/child class calls constructor of its parent class so that it only has to handle data members and methods specific to the child class.\
+\
+\ul Polymorphic/Liskov substation principle\ulnone \
+- an object of the derived class can be treated like an object of the base class under all circumstances\
+\
+\ul Function overloading\ulnone \
+
+\f0\b void print_label(const UPerson*person)\{\}\
+void print_label(const UPerson&person)\{\}\
+void print_label(const Student&student)\{\}
+\f1\b0 \
+
+\f0\b Int main()\{\
+Student tom(\'93Tom\'94, CIVL, 3.9); print_label(tom);\
+UPerson& tom2 = tom; print_label(tom2);\
+UPerson*p = &tom; print_label(p);\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 // first line returns 3 since although both 2 and 3 are valid, option 3 is closer to the actual case\
+// since tom2 was initialised as a reference to an object of type UPerson, the compiler believes that it is creating a reference to a UPerson object. \ul IT WILL NOT TRIGGER COPY CONSTRUCTOR SINCE JUST REFERENCE. \ulnone It will not bother to check that it was originally a Student object\
+// only one that matches is the pointer to type UPerson (through static checking)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 UPerson&tom2 = tom; 
+\f1\b0 // works because tom is a Student so it can be treated like.a UPerson\
+
+\f0\b Student&tom2 = k; 
+\f1\b0 // if k is a UPerson\
+// doesn\'92t work - attempted down casting - attempting to create a child object eg Student FROM a UPerson object\
+\
+If we add a new class PG_Student to the hierarchy that extends from class Student, then PG_Student directly inherits from Student and PG_Student, and \ul indirectly inherits\ulnone  from UPerson. Only need to include all immediate/direct parents (since by definition they will include their own parents)\
+\
+So class C\'92s constructor can only calll class B\'92s constructor, and that in turn can only call class A\'92s constructor (C cannot call A)\
+We can call UPerson\'92s constructor through the MIL\
+\
+\ul Order of constructor/destructor - student with an address\ulnone \
+
+\f0\b class Student : public UPerson\{\
+private:\
+Address address;\
+public:\
+Student()\{cout << \'93student cons\'94 << endl;\} \}\
+class UPerson\{\}\
+class Address\{\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 \
+In general, MIL contains parent class constructor first before initialising its own unique data members. In this case, order of construction is UPerson (parent), then Address (Student\'92s data member) then Student, and destruction is opposite.\
+If Address was an attribute that belonged to UPerson first, then order is \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 \ul Slicing
+\f1\b0 \ulnone \
+- When assignment occurs from a derived class object to a base class object.\
+- eg 
+\f0\b uperson = student; 
+\f1\b0 // UPerson does not have any GPA or any attributes associated with a student\
+\
+
+\f0\b \ul Name Conflicts
+\f1\b0 \ulnone \
+
+\f0\b class B\{\
+private:\
+Int x, y;\
+public:\
+B(int p=1; int q=2;) : x(p), y(q) \{cout << \'93base constructor\'94; print (x,y);\}\}\
+void f() const \{cout << \'93Base class:\'94; print(x,y);\
+\};\
+\
+class D : public B\
+\{\
+private:\
+float x, y;\
+public:\
+D() : x(10.2), y(20.6) \{cout << \'93derive constructor\'94; print(x,y);\}\
+void f() const \{cout << \'93Derived class\'94 << print(x,y); << B::f();\}\
+\};
+\f1\b0 \
+\
+
+\f0\b void smart(const B*p) \{cout << \'93smart\'94; p->f();\}\
+\
+int main\{\}\{\
+B base(5,6); cout << endl;\
+D derived; cout << endl;\
+B *bp = &base; bp->f(); cout << endl;\
+D * dp = &derive; dp->f();\
+bp = &derive; bp->f();\
+smart(bp); smart(dp);\
+\}
+\f1\b0 \
+- Line 1 is output \'93base class on 5,6\'94 (calls base constructor)\
+- Line 2 calls default constructor of D. before we access the function body of the derived class, we need to call the constructor for B. (No arguments are given so we use x=1, y=2) so output is \'93Base class 1,2\'94, then \'93derived class 10.2, 20.6\'94\
+- Line 3 creates pointer to B object. bp->f calls f function of dereferenced bp which is just \'93Base class 5,6\'94\
+- Line 4 creates another pointer. Calls function f of the derived class, which calls print(10.2, 20.6). Since print function expects integers, it narrows them to 10, 20. Then it calls B::f, which prints base class, then x,y, which is (1,2). Total output: \'93\ul Derived class 10,20 | Base class 1,2 
+\f0\b \ulnone \'93\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 This is because when we created derived object D, we called constructor on the \ul base class\ulnone , so base class\'92s x and y are 1,2 (default values).\
+- Line 5 makes bp point to the address of derive, so since bp was declared as a pointer to a B object, it will cal B\'92s version of the function\
+- Line 6 and 7 call the same thing since bp and dp point to the derived object. So they both call the dereferenced B pointer, so it calls the B version\'92s function. So output is \'93\ul smart base class (1,2)\'94\ulnone \
+\
+Base class \ul constructed before \ulnone derived class. Base class destructed after derived class. If no constructor to parent/base class is specified, the default is called.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Constructor cannot be put in MIL otherwise default called (even if explicit call in function body)\ulnone \
+\
+Add print() to UPerson/Student\
+
+\f0\b class UPerson(public: void print() const;\}\
+class Student: public UPerson \{public: void print() const;\}\
+void Student::print() const\{\
+cout << name << endl; cout << dept << endl;\
+\}
+\f1\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\i \cf0 \
+The above code does not compile since \ul name\ulnone  and \ul dept\ulnone  are private data members of class UPerson. \ul Public inheritance \ulnone does not change access control of the data members of the base class.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Protected
+\f4\b0  i\ulnone s a new access control keyword used in the \ul base/parent class.\ulnone  is similar to private, but data members are \ul accessible to member functions and friends of the class AND its derived classes.\ulnone  So difference between private and protected is simply: former prevents derived classes, latter allows them.\
+\
+
+\f5\b class UPerson\
+\{\
+protected:\
+string name\
+Department dept;\
+public:\
+\'85\
+\}
+\f4\b0 \
+\
+If we move from protected to private, future changes to all derived class needed to be updated (since the derived class may try to directly access data members). \ul Private is preferable\ulnone \
+\
+
+\f5\b \ul Polymorphism - global print() function for UPerson and derived objects
+\f4\b0 \ulnone \
+\
+
+\f5\b void print_label_v(UPerson uperson) \{uperson.print();\}\
+void print_label_r(const UPerson & uperson) \{uperson.print();\}\
+void print_label_p(const UPerson * uperson) \{uperson->print();\}\
+int main()\{\
+print_label_v(uperson); print_label_v(student); print_label_v(teacher);\
+print_label_r(uperson); print_label_r(student); print_label_r(teacher);\
+print_label_p(uperson); print_label_p(student); print_label_p(teacher);\
+\}
+\f4\b0 \
+\
+Since all the print label functions expect a UPerson object, it will try to treat it as a UPerson object, even if it is a derived class of UPerson, it will only print the attributes of the UPerson but not the Student or Teacher\'92s attributes\
+\
+We want a way to tell the function to know what object type it is being passed so it can call the appropriate function for that type to print out all of its data members.\
+\
+
+\f5\b \ul Static binding
+\f4\b0 \ulnone \
+When function codes are compiled, compiler only looks at the static type of the argument \'91uperson\'92, which is type 
+\f5\b UPerson
+\f4\b0 , the method 
+\f5\b UPerson::print()
+\f4\b0  is called; because analysis of the code is done at compile time\
+\
+
+\f5\b UPerson * u; Teacher * t;
+\f4\b0 \
+
+\f5\b u = &uperson; u->print(); /
+\f4\b0 / calls UPerson version of print\
+
+\f5\b t = &teacher; t->print(); 
+\f4\b0 // calls Teacher version of print\
+
+\f5\b u = &teacher; u->print(); 
+\f4\b0 // u believes it points to UPerson class, so calls UPerson version of print\
+
+\f5\b t = &uperson; t->print(); 
+\f4\b0 // t believes it points to Teacher class, but can\'92t get derived class from a base class. the assignment raises an error.\
+
+\f5\b t=static_cast<Teacher*>(&uperson); t->print(); 
+\f4\b0 // tries to understand &uperson as type \'91pointer to Teacher\'92. However, the result is it prints details as a teacher - but since \'91rank\'92 and \'91research area\'92 for uperson were never assigned to this object, we get \ul undefined behaviour\ulnone \
+\
+\
+
+\f5\b \ul Dynamic binding
+\f4\b0 \ulnone \
+\
+- The actual method to be called is s\ul elected using the actual type of the object in the call, but only if the object is passed by reference or pointer.\ulnone \
+- Takes place as the code is running. Supported by virtual functions, using the keyword 
+\f5\b virtual i
+\f4\b0 n the definition of that function. \
+- Once it is virtual in the base class, it is automatically virtual in all derived classes. But good style to write them out anyways to improve readability in header files\
+- virtual functions little bit slower than normal function calls.\
+\
+
+\f5\b UPerson
+\f4\b0  exhibits polymorphism since it can take on multiple shapes (Student, Teacher, PG_Student). 
+\f5\b \ul Pointer or reference must be used to take advantage of polymorphism.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 \ulnone \
+\ul Why cannot we use polymorphic property if we pass by value? \ulnone \
+ - polymorphism is ability of object type to be checked at runtime\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Run Time type information aka RTTI
+\f4\b0 \ulnone \
+- program does some bookkeeping to remember the dynamic type of each object during runtime\
+- 
+\f5\b typeid(<expression>) 
+\f4\b0 returns object of type 
+\f5\b type_info
+\f4\b0 , it has a member function 
+\f5\b const char * name() 
+\f4\b0 const that returns the \ul type name \ulnone of the expression.\
+\
+
+\f5\b cout << typeid(*uperson[I]).name() << endl; 
+\f4\b0 // iterates through loop and \ul prints out the type\ulnone  of the uperson[I] object that it points to.\
+\
+
+\f5\b static_cast() 
+\f4\b0 is used to perform type conversions. \ul Doesn\'92t consult RTTI \ulnone to ensure conversion is date, thus it runs faster.\
+\
+
+\f5\b dynamic_cast() 
+\f4\b0 only works on pointers and references of polymorphic class \ul (with virtual functions)\ulnone , consults RTTI to make sure conversion result is a pointer to a \ul valid, complete object of larget type\ulnone . Else returns a null pointer\
+\
+
+\f5\b \ul Overriding and Virtual Functions
+\f4\b0 \ulnone \
+When a derived class defines a method with the same name as a base class the method, it \ul overrides the base method.\
+
+\f5\b \ulnone Student::print()
+\f4\b0  overrides 
+\f5\b UPerson::print()
+\f4\b0 \
+- All derived class should respond to the same request, but response varies depending on the object.\
+- Designer of a base class must realise that any class derived from the base can override it. Must declare 
+\f5\b UPerson::print() 
+\f4\b0 to be a \ul virtual function\ulnone \
+- for overriding to work, prototype of the virtual function in derived class must be i\ul dentical \ulnone to that of the base class\
+- 
+\f5\b override 
+\f4\b0 keyword will override the function declaration in the derived classes (in C++ 11). Acts as a safety net, not necessary.\
+\
+
+\f5\b \ul Using Overrides\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 \ulnone \
+\pard\pardeftab720\partightenfactor0
+
+\f0\i0\b \cf3 #include
+\f1\b0 \cf0  \cf4 <iostream>\cf0 \
+
+\f0\b \cf3 using
+\f1\b0 \cf0  
+\f0\b \cf3 namespace
+\f1\b0 \cf0  std;\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf3 \ul \ulc3 class
+\f1\b0 \cf0 \ulc0  \cf5 \ulc5 Base\cf0 \ulc0 \{\ulnone \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf3 public
+\f1\b0 \cf0 :\
+
+\f0\b \cf3 virtual
+\f1\b0 \cf0  
+\f0\b \cf3 void
+\f1\b0 \cf0  
+\f0\b f
+\f1\b0 (
+\f0\b \cf3 int
+\f1\b0 \cf0  a) 
+\f0\b \cf3 const
+\f1\b0 \cf0  \{cout << a << endl;\}\
+
+\f0\b \cf3 virtual void
+\f1\b0 \cf0  
+\f0\b g
+\f1\b0 (
+\f0\b \cf3 int
+\f1\b0 \cf0 ) 
+\f0\b \cf3 const
+\f1\b0 \cf0  \{cout << a << endl;\}\
+\};\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf3 \ul \ulc3 class
+\f1\b0 \cf0 \ulc0  \cf5 \ulc5 Derived\cf0 \ulc0 :
+\f0\b \cf3 \ulc3 public
+\f1\b0 \cf0 \ulc0  \cf5 \ulc5 Base\cf0 \ulc0 \{\ulnone \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf3 int
+\f1\b0 \cf0  \cf6 x\cf0 \{25\};\
+
+\f0\b \cf3 public
+\f1\b0 \cf0 :\
+
+\f0\b \cf3 void
+\f1\b0 \cf0  
+\f0\b f
+\f1\b0 (
+\f0\b \cf3 int
+\f1\b0 \cf0 ) 
+\f0\b \cf3 const
+\f1\b0 \cf0  
+\f0\b \cf3 override
+\f1\b0 \cf0 ;\
+
+\f0\b \cf3 void
+\f1\b0 \cf0  
+\f0\b g
+\f1\b0 (
+\f0\b \cf3 float
+\f1\b0 \cf0 ) 
+\f0\b \cf3 const
+\f1\b0 \cf0  
+\f0\b \cf3 override
+\f1\b0 \cf0 ;\
+\};\
+\
+\pard\pardeftab720\partightenfactor0
+\cf7 // don\'92t repeat override keyword here\cf0 \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf3 void
+\f1\b0 \cf0  
+\f0\b Derived::f
+\f1\b0 (
+\f0\b \cf3 int
+\f1\b0 \cf0  b) 
+\f0\b \cf3 const
+\f1\b0 \cf0  \{cout << \cf6 x\cf0 +b << endl;\}\
+
+\f0\b \cf3 int
+\f1\b0 \cf0  
+\f0\b main
+\f1\b0 () \{\cf5 Derived\cf0  d; \cf5 Base\cf0  &b=d; b.f(5); 
+\f0\b \cf3 return
+\f1\b0 \cf0  0;\}
+\f4\i \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \
+F is a virtual function, so it will try to see that though b is a Base type reference, d is a Derived object so it will print out 25+5=30.\
+For function g, since signature of function g in base class is not identical to signature of base class f, will raise compilation error.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Virtual functions summary
+\f4\b0 \ulnone \
+- If method should work exactly the same for all derived classes, it should not be a virtual function\
+- If behaviour of the method is dependent on the object calling it, should be a virtual function\
+- Overriding is for specialising a behaviour, not changing the semantics. \ul Allows a different implementation to be created for a function declared in the base class.\ulnone  Decision of which method to call is done at runtime. No \ul global overriding, only member functions\ulnone .\
+- \ul Overloading\ulnone  allows programmers to use functions with the SAME NAME but DIFFERENT ARGUMENTS for similar purposes, eg addition, with floats and ints. \ul Only occurs within the same scope.\ulnone \
+\
+\
+
+\f5\b \ul Virtual functions, constructors and destructors
+\f4\b0 \ulnone \
+
+\f5\b \
+int main()\{\
+Student *s = new Student(\'93Simpson\'94, CSE, 3.8);\
+s->add_course(\'93C\'94);\
+UPerson*p = s;\
+delete p;\}
+\f4\b0 \
+// since p believes it points to a UPerson, when it calls 
+\f5\b delete p,
+\f4\b0  it will try to call the destructor of a UPerson and NOT a Student! Results in undefined behaviour\
+\
+Virtual destructors allow us to use dynamic binding in order to call the appropriate destructor at runtime. \ul When a class does not have a virtual destructor, it is a strong hint that the class is NOT designed to be used as base class. \ulnone \
+\
+
+\f5\b virtual 
+\f4\b0 keyword needs to included for both \ul destructor functions\ulnone  in order for dynamic binding to accurately recognise the destructor that should be called\
+- \ul Virtual cannot be made inline since inline functions are substituted in at compile time, but virtual functions do dynamic binding at runtime.\ulnone \
+\
+\'97\'97\'97\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\i0\b \cf3 #include
+\f1\b0 \cf0  \cf4 <iostream>\cf0 \
+
+\f0\b \cf3 using
+\f1\b0 \cf0  
+\f0\b \cf3 namespace
+\f1\b0 \cf0  std;\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf3 \ul \ulc3 class
+\f1\b0 \cf0 \ulc0  \cf5 \ulc5 Base\cf0 \ulc0 \{\ulnone \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf3 public
+\f1\b0 \cf0 :\
+	
+\f0\b Base
+\f1\b0 ()\{cout << \cf4 "Base \ul const\ulnone "\cf0 << endl; f();\}\
+
+\f0\b \cf3 virtual
+\f1\b0 \cf0  
+\f0\b \cf3 void
+\f1\b0 \cf0  
+\f0\b f
+\f1\b0 () \{cout << \cf4 "Base::f()"\cf0  << endl;\}\
+\};\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf3 \ul \ulc3 class
+\f1\b0 \cf0 \ulc0  \cf5 \ulc5 Derived\cf0 \ulc0 :
+\f0\b \cf3 \ulc3 public
+\f1\b0 \cf0 \ulc0  \cf5 \ulc5 Base\cf0 \ulc0 \{\ulnone \
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf3 public
+\f1\b0 \cf0 :\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf0 Derived
+\f1\b0 ()\{cout << \cf4 "derived \ul const\ulnone "\cf0  << endl;\}\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf3 virtual
+\f1\b0 \cf0  
+\f0\b \cf3 void
+\f1\b0 \cf0  
+\f0\b f
+\f1\b0 () 
+\f0\b \cf3 override
+\f1\b0 \cf0  \{cout << \cf4 "Derived::f()"\cf0  << endl;\}\
+\};\
+\
+
+\f0\b \cf3 int
+\f1\b0 \cf0  
+\f0\b main
+\f1\b0 () \{\cf5 Base\cf0  * p = 
+\f0\b \cf3 new
+\f1\b0 \cf0  \cf5 Derived\cf0 ; cout << \cf4 "derived class \ul obj\ulnone  created"\cf0  << endl; p->f();\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\i \cf0 \
+Before we even construct the derived object, we must construct the base object, so we print base constructor. So we call function f in base constructor, and at this point, since it is still a Base object, it outputs \'93Base::f()\'94\
+Then it calls the derived constructor. When we call p->f(), since f() is a virtual function we dynamically check type at runtime so it calls the appropriate f, i.e. function f of the Derived class.\
+\ul Cannot rely on polymorphism during object construction\ulnone \
+\
+Consider an example where our base class is Personal_Asset, and we want to describe other assets we own.\
+How to implement Personal_Asset::compute_net_worth()? \ul It depends on the actual asset type aka actual derived object type. \ulnone Does not make sense to have an explicit object of this type since it doesn\'92t really mean anything! Solution is to use:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Abstract base class (ABC) 
+\f4\b0 \ulnone \
+- since it has no meaning on its own , we make a \ul pure virtual function\ulnone  aka no body. Declare it but no way to execute it FROM THE BASE CLASS. virtuality makes sure only derived class can access that function\
+
+\f5\b virtual double compute_net_worth() const = 0;
+\f4\b0  // only the function header\
+Once I have a \ul class with at least one pure virtual function, we cannot call constructors of the base class directly.\
+
+\f5\b \ulnone Personal_Asset p_asset(2000); 
+\f4\b0 // raises error\
+\
+If Bank_Acc_Asset inherits from Personal_Asset and Bank_Acc_Asset did not have an override for the pure virtual function, then Bank_Acc_Asset would inherit all data members and member functions of Personal_Asset, so it would inherit the pure virtual function and also be an ABC.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul - Derived classes are responsible for implementing ALL pure virtual functions, otherwise they also become ABCs.\ulnone \
+\ul - ABC\'92s cannot be used as an argument type passed by value, as a function return type by value, or as the type in an explicit conversion. Calling pure virtual function from constructor of ABC is undefined.\
+- 
+\f5\b Pointers and references to ABCs ok!!! \
+
+\f4\b0 - However we cannot call constructor of abstract base class directly, so:
+\f5\b \ulnone \
+Base * b = new Base(); 
+\f4\b0  // not OK\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 Base & b = new Derived(); 
+\f4\b0 // OK\
+\
+\
+\
+
+\f5\b \ul Final keyword
+\f4\b0 \ulnone \
+\
+
+\f5\b class A \{\};\
+class B : public A \{\};
+\f4\b0 \
+
+\f5\b class C final : public B \{\}; 
+\f4\b0 // final keyword in class declaration stops other classes from being derived from it. C cannot have any children classes of its own
+\f5\b \
+class D : public C \{\}; 
+\f4\b0 // Error because of final keyword
+\f5\b \ul \
+\
+\ulnone class Student : public UPerson\{\
+public:\
+virtual void print() const override final \{\}\}\
+class PG_Student : public Student\{\
+public:\
+virtual void print() const override \{\}\} 
+\f4\b0 // error!
+\f5\b  
+\f4\b0 cannot override a method that has been declared as final in a base class. Makes sure functionality of the method stays the same no matter whichever type is calling it.\
+\
+
+\f5\b \ul Public vs protected vs private inheritance. 
+\f4\b0 \
+
+\f5\b \ulnone class Student : public UPerson()
+\f4\b0 \
+- Inheritance type controls how the \ul inherited members of UPerson (the base/parent class) \ulnone are accessed by Student\'92s derived classes (not by the Student class itself) or global functions.\
+\
+- Public means \'93maintain the same access control of all members inherited from the parent class\'94\
+- Protected means everything in access control remains the same EXCEPT whatever was public in my base/parent class becomes protected.\
+- private renders all inherited members private\ul \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Generic Programming\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 \ulnone \
+- Functions and data structures may look alike, in which case we want to define many functions with the \ul same name\ulnone , but differ only in the types of objects they manipulate. Eg\
+- 
+\f5\b Inline const sum(int a, int b) \{\'85\}
+\f4\b0 \
+- Solution is \ul generic programming\ulnone  using \ul function templates and class templates\ulnone , except they manipulate objects parameterised by type variables - allows us to write ONE version of code that works for \ul different types of objects\ulnone \
+\
+It starts with the keyword 
+\f5\b template. typename
+\f4\b0  is also a keyword, \ul can be replaced by class.
+\f5\b \ulnone \
+template <typename T> inline const T& larger(const T&a, const T&b)\{return (a < b) ? b : a;\}
+\f4\b0 \
+\
+// just a function template definition, which is not an actual FUNCTION itself! NO FUNCTION CODES GENERATED\
+\
+We may make use of the template to call larger() for \ul any types\ulnone  as long as the function body makes sense for the types. Example: can\'92t multiply two strings together.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Function Template Instantiation
+\f4\b0 \ulnone \
+- Compiler will generate function codes at compile time. This is called 
+\f5\b \ul template instantiation
+\f4\b0 \ulnone .\
+- Parameter \ul T \ulnone in the template definition is called the \ul formal parameter\ulnone  or formal argument of the template.\
+- Compiler will instantiate 2 larger() functions by substituting the actual argument types; int and string, respectively, into the larger function template.\
+- The more times we call a template with different types, the more (separate) function codes are instantiated for each type, and the size of the final executable increases accordingly!\
+- when compiler instantiates a template, tries to determine the actual type of the template by looking at the types of the actual argument in a function call. \ul No automatic type conversion for template\'92s formal arguments\
+- example:
+\f5\b \ulnone  cout << larger(4, 5.5); 
+\f4\b0 \ul // raises error\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ulnone \
+\
+If we want a function like 
+\f5\b const double& larger(const double &a, const double&b) \{\'85\}
+\f4\b0 \ul \
+\ulnone - explicitly instantiate the function template by adding the actual type we want AFTER function name using <> syntax\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 cout << larger<double>(4, 5.5);
+\f4\b0 \
+\
+
+\f5\b int main()\
+\{\
+const char *m = \'93microsoft\'94; 
+\f4\b0 // const literal
+\f5\b \
+const char *a = \'93apple\'94;\
+int x;\
+cout << larger(a, m) << \'93 is better!\'94 << end;\
+\}
+\f4\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Const literals are stored in a separate part of the memory!! \ulnone Everything else comes from the stack in reverse order (first object has larger memory address than the next). But for const literals, first one stored in earlier memory, later ones stored in order\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Template Specialisation 
+\f4\b0 \ulnone (for types that did not specify the < operator)\
+\
+
+\f5\b template <typename T> inline const T& larger(const T&a, const T&b)\{return (a < b) ? b : a;\}\
+template <> const char * const & larger(const char * const&a, const char * const &b)\{return strcmp(a, b) < 0 ? b : a;\} 
+\f4\b0 // if we give two char pointers runs this version instead\
+\
+// specialised version that works only for pointers to const char\
+// we could remove the \'93template<>\'94 keyword; in which case one is a function and one is a template.\
+\
+
+\f5\b template <> const Student& larger(const Student&a, const Student&b)\{return a.get_GPA() < b.get_GPA() ? b : a;\} 
+\f4\b0 // specialised version: if we give two Student objects by reference return the one with higher GPA\
+\
+Possible to have templates for more than one type, each using a different typename\
+\
+
+\f5\b template <typename T1, typename T2> inline const T1& larger(const T1&a, const T2&b)\{return (a < b) ? b : a;\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 However the return type for 
+\f5\b larger(4, 5.5)
+\f4\b0  is int, even though it should return a double aka 5.5.\
+When we compare 4 and 5.5, 4 is promoted to double and (4.0) is compared with (5.5). This is a local temporary object, and we will end up having \ul a reference to a deleted object \ulnone when we return, so we also get a warning.\
+\
+To avoid this warning, \ul return by value/object. \ulnone It will make copy the result of the comparison into the returned object.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 template <typename T1, typename T2> inline const T1 larger(const T1&a, const T2&b)\{return (a < b) ? b : a;\}
+\f4\b0 \
+Another way is to have no return value at all and just print the output\
+\
+A common error is not specifying the template parameter T. Example:\
+
+\f5\b Template<class T> T* create() \{return new T;\};
+\f4\b0 \
+\
+Templates can also be made for classes - eg linked list node of different data types\
+
+\f5\b #ifndef LISTNODE_H\
+#define LISTNODE_H\
+\
+template <typename T> class List_Node\{\
+public:\
+List_Node(const T&x) : data(x) \{\}\
+List_Node * next \{nullptr\};\
+List_Node* prev \{nullptr\};\
+T data;\
+\};\
+#endif
+\f4\b0 \
+\
+We can then create a linked list out of linked list nodes for any specific type, using the template\
+\
+
+\f5\b #ifndef LIST_H\
+#define LIST_H\
+#include \'93listnode.h\'94\
+\
+template <typename T> class List\
+public:\
+void append(const T& item)\{\
+    List_Node<T>* new_node = new List_Node<T> (item);\}\
+    
+\f4\b0 // incomplete. List_Node<T> refers to a List Node object with data type (int)
+\f5\b \
+\};\
+#endif
+\f4\b0 \
+\
+For functions, we may rely on compilers to deduce the type of the arguments, aka: 
+\f5\b int i=larger(4,5) 
+\f4\b0 \
+For class templates, \ul ALWAYS SPECIFY actual template arguments when creating the class objects; \ulnone compiler cannot deduce template arguments: 
+\f5\b List primes; List.append(2); 
+\f4\b0 // too late! Error, need to specify 
+\f5\b List<int>
+\f4\b0 \
+\
+Templates may have non-type parameters, aka 
+\f5\b template <typename T, int max_num_items> class List \{\'85\} 
+\f4\b0 is valid. We may do something like 
+\f5\b List<float, 50>
+\f4\b0 .\
+\
+We can pass an array by reference; the following takes as input by reference an array of integers of size 2. \ul That function will only work for each particular array size\ulnone , so we can use a template to create a separate version of the function or every different array size.\
+
+\f5\b void f(int (&x)[2]);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 \
+\ul Wherever we declare our template, we should also define our function in the same file!!!! Need to include template header file in every file we use\ulnone \
+\
+\ul Templates can have default parameters.\
+\pard\pardeftab720\partightenfactor0
+
+\f6\i0\fs26 \cf0 \cb8 \expnd0\expndtw0\kerning0
+\ulnone template <class T, class U, class V=double>\
+class A\
+\{\
+    T x;\
+    U y;\
+    V z;\
+\};\
+ Is acceptable\
+\
+# can pass NON TYPE arguments to template too (int max). They must be treated as CONST\
+template <class T, int max>\
+int arrMin(T arr[], int n)\{\
+int m = max;\
+for (int I=0; I<n; I++)\{\
+if arr[I]<m\
+m=arr[i];\}\
+return m;\}\
+arrMin<int, 10000>([20,50,12,13],sizeofthearray); // is OK\
+\
+\
+# floating point numbers are NOT allowed as non-type arguments\
+template <double x> double func() \{return x;\} // NOT OK\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f4\i\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Operator Overloading
+\f4\b0 \ulnone \
+- eg plus, minus, modulo, comparison, reference, dereference\
+c++ allows us to reuse most of our operators and redefine them so that they can be used for user-defined classes, eg vectors, matrices, etc\
+\
+While we could define an add function for vectors, if our compiler doesn\'92t have \ul copy elision\ulnone  (smart way of making it so we don\'92t need to return by value), it has to call the copy constructor when returning the resultant vector object by value.\
+\
+
+\f5\b operator+
+\f4\b0  is a \ul formal \ulnone function name that can be used like any other function name. It has a nickname, namely 
+\f5\b +
+\f4\b0 . Formal name has to be called as 
+\f5\b operator+(a, b);
+\f4\b0  informal can just be 
+\f5\b a+b
+\f4\b0 \
+\
+
+\f5\b Vector operator+(const Vector&a, const Vector&b)\{\
+return Vector(a.getx() + b.getx(), a.gety() + b.gety());\
+\}\
+\
+ans = b + 1.0 
+\f4\b0 // compiler sees we are calling operator+ on one vector and one float. Will try to elevate the float, 1.0, into a vector (by reference) aka
+\f5\b  const Vector &b = 1.0; 
+\f4\b0 \ul so it will call the constructor of Vector just with one argument to create a temporary object, and assign a reference to said object.\ulnone \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Nicknames eg + can only be used when calling the function\ulnone . Formal name can be used in any context; eg declaring, defining, calling, or taking its address.\
+\
+Almost all operators in C++ can be overloaded except\
+\ul . (Data member) :: (scope operator) ?: (ternary) .* (member access by pointer)\ulnone \
+Cannot define new operators, only redefine existing ones.\
+\ul We cannot change the following properties of an operator:\ulnone \
+\
+- \ul arity \ulnone - number of arguments an operator takes. Even if we overload 
+\f5\b !x
+\f4\b0 , for instance, cannot give it anything other than 1 input. \
+- \ul associativity\ulnone  - eg (a+b)+c = a+b+c\
+- \ul precedence\ulnone  - a+b*c is treated as a+(b*c)\
+- Also, all C++ operators already have \ul predefined meaning for the built-in \ulnone types, it is impossible to change their meaning.\
+- \ul Therefore, every operator function we define must implicitly have at least one argument of a user defined class type\ulnone \
+- we may define new operator functions as member functions of classes, or as a global non-member function\
+\
+Currently, 
+\f5\b Vector
+\f4\b0  objects are printed by calling their print function. Write a non-member operator << function to print vector objects more naturally by using \ul cout or cerr.\
+\ulnone Can generalise 
+\f5\b operator<<
+\f4\b0  function to print Vectors to any ostream objects. \'93
+\f5\b ostream
+\f4\b0 \'94 is the base class for all possible output streams.\
+\
+To allow usual syntax with cout on the left, the 
+\f5\b ostream
+\f4\b0  object must be the first argument in the function\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 ostream& operator<<(ostream&os, const Vector &a)\{\
+return (os << \'93\{\'93 << a.getx() << \'93, \'93 << a.gety() << \'93)\'94\};\}
+\f4\b0 \
+So calling 
+\f5\b cout << \'93vector + vector\'94 << a+b<< endl;
+\f4\b0  returns by reference the object os, which is an ostream object.\
+\
+Operator returns an ostream object, because we like to cascade outputs.\
+
+\f5\b operator<<(operator<<(cout, \'93a=\'93), a);
+\f4\b0  is equivalent to c
+\f5\b out << \'93a=\'93 << a;
+\f4\b0 \
+\
+Member operator functions are called using dot syntax. If a and b are vectors, then a+b is equivalent to 
+\f5\b a.operator+(b).
+\f4\b0  The class object aka calling object (a) must be the left operand. when we \ul define 
+\f5\b \ulnone operator+
+\f4\b0  as a \ul member function \ulnone of Vector, it only has one argument.\
+For every member function, recall that it is \ul implicitly compiled\ulnone  into a global function with the \'91
+\f5\b this
+\f4\b0 \'92 pointer acting as its first argument, so operator+ becomes 
+\f5\b Vector Vector::operator+(const Vector*this, const Vector&b);\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 \
+^^NOT SURE HOW THIS WORKS\
+\
+Insertion operator \'93
+\f5\b <<\'93
+\f4\b0  cout is an object of ostream class which is a compiler defined class. When we do cout << obj where obj is an object of our class, compiler first looks for operator function in ostream, then for a global function.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Commutativity
+\f4\b0 \ulnone \
+
+\f5\b cout << \'93scalar + vector: 8.2+a = \'93 << 8.2 + a << endl;
+\f4\b0 \
+// This gives a \ul compiler error.\ulnone  Whenever we give it an operator like 8.2+a, it converts the expression to the two possible representations:\
+-  1. It either converts it into a global function operator+ taking arguments:\
+
+\f5\b operator+(a,b)
+\f4\b0 \
+-  2. Or a \ul member function of class a,\ulnone  with b as an argument\
+
+\f5\b a.operator(+b)
+\f4\b0 \
+It then verifies whether one of them is defined. \ul It is an error to define both\
+ONLY DEFINE ONE\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ulnone \
+As a Vector member function, the left operand should always be a Vector. When we do Vector + scalar, it works fine because we may use the conversion constructor to convert scalar to type Vector. So a+8.2 is converted to 
+\f5\b a.operator+(Vector(8.2))
+\f4\b0 \
+\
+Int is not a class, there is no operator+ member function for it, nor can we redefine int since it is a basic type.\
+\
+In theory, the scalar 5 can be possibly converted to objects of many user defined classes if they have such a conversion constructor, so compiler will not do this for us.\
+\
+Solution 1:\
+Create a global function:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 Vector operator+(double a, const Vector&b) \{return b+a;\} 
+\f4\b0 // only called for scalar+vector, NOT vector+vector or vector+scalar\
+\
+Solution 2:\
+Create a global function, but a little bit slower since we need accessor member functions\
+
+\f5\b Vector operator+(const Vector&a, const Vector&b)\{\
+return Vector(a.getx()+b.getx(), a.gety()+b.gety());\
+\}
+\f4\b0 \
+\
+
+\f5\b \ul Overload Operator= for Member Assignment
+\f4\b0 \ulnone \
+
+\f5\b const Vector& Vector::operator=(const Vector&b)\{\
+If (this != &b\}\
+\{\
+x = b.x;\
+y= b.y;\}\
+\}
+\f4\b0 \
+// this function does memberwise copy, return by const reference, by triggering a call to function a.operator=(b), saves time by not copying if same object\
+
+\f5\b (a=b)=c 
+\f4\b0 // raises compile error because a=b returns a const reference to a, a Vector object, so we cannot modify it. Change return type of function by omitting const to make it work\
+
+\f5\b a=b=c
+\f4\b0  //  does work with const argument. If argument (NOT return type) was nonconst, would not work. b=c returns const reference, but a=(b=c) retries to call a.operator=(Vector&(b)) but can\'92t convert const to nonconst\
+\
+Whenever we are \ul overloading the bracket operator 
+\f5\b \ulnone operator[] 
+\f4\b0 to get elements of an array. \
+- One should be \ul read-only (const function)\ulnone  that returns by value, and another that\
+- Read and write (non-const function) that returns by reference.\
+\
+In the global function\
+
+\f5\b operator<<(ostream &os, const Vector &a)\{\
+return os << a[0] << endl;\}
+\f4\b0 \
+// since Vector a is a const object, it will call the const version of the operator[] function. if we DONT have the READONLY version, we will try to call 
+\f5\b a.operator[](0);
+\f4\b0  and \ul can\'92t call nonconst version of member function for a const object a.\ulnone \
+\
+For code\
+
+\f5\b a[0] = 5.6; 
+\f4\b0 // runs the second version since a is a nonconst Vector object in that scope\
+\
+
+\f5\b \ul Overloading pre- and post-increment
+\f4\b0 \ulnone \
+a++ and ++a is\
+Convention is that pre-increment returns an l-value and TAKES NO ARGUMENT\
+Post-increment returns an r-value and t\ul akes a dummy argument (not even used) of type int.\
+
+\f5\b \ulnone Vector Vector::operator++(int)\
+\{Vector temp(x,y);\
+x++; y++; return temp;\
+\}
+\f4\b0 \
+\
+
+\f5\b \ul Summary of operators to be member or nonmember
+\f4\b0 \ulnone \
+Operators assignment (=), indexing [], and call () are required by C++ to be defined as class member functions. A member operator has implicit first argument of a class.\
+- So if \ul left operand of an operator \ulnone must be an object of the class it can be a \ul member function\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ulnone - so if l\ul eft operand of an operator must be object of another class\ulnone , it must be a 
+\f5\b \ul non member function,
+\f4\b0 \ulnone  eg operator <<.\
+\ul - Commutative operators \ulnone like + and * is usually preferred to be defined as \ul non member functions \ulnone to allow conversion of types \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Implementing operator<< as a member function
+\f4\b0 \ulnone \
+
+\f5\b int main()\{\
+Vector a(1.1,2.2);\
+Vector b(3.3,4.4);\
+Vector D = a+b;\
+D << (cout << \'93vector a+b\'94)) << endl;\
+\}
+\f4\b0 \
+Inner part just prints\
+Second part calls left operand 
+\f5\b operator<<(Vector&, ostream&)
+\f4\b0  => compiled as \ul operator(d, cout) \ulnone => so it actually just prints d;\
+\
+This strange syntax occurs because we defined 
+\f5\b operator<<
+\f4\b0  to be a member function, so the Vector object HAS to be on the LEFT, and our 
+\f5\b ostream& 
+\f4\b0 (aka cout)
+\f5\b  
+\f4\b0 object on the RIGHT\
+So we will have to write\
+Z << (y << (x << cout));\
+Usually, better to implement them as global non member functions, so that our 
+\f5\b ostream& 
+\f4\b0 object aka cout is on the LEFT and our Vector is on the RIGHT.\
+\
+However, two issues: \ul global non member functions can\'92t access private data members\ulnone , so we need to provide the latter with public accessor member functions, like getx(), gety(). But this is l\ul ess efficient due to the additional calls to member functions\ulnone \
+\
+
+\f5\b \ul Making friends.
+\f4\b0 \ulnone \
+Inside class Vector,\
+
+\f5\b class Vector\{
+\f4\b0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul // these two functions are NOT part of the class.\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 friend ostream& operator<<(ostream&os, const Vector&a);\
+friend Vector operator+(const Vector &a, const Vector&b);\
+\}
+\f4\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul // globally defined\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 ostream& operator<<(ostream&os, const Vector&a)\{\
+\}\
+friend Vector operator+(const Vector &a, const Vector&b)\{\
+return Vector(a.x+b.x, a.y+b.y);\
+\}
+\f4\b0 \
+\
+// x, y are private, but they can be accessed by the 
+\f5\b operator<< and operator+ method 
+\f4\b0 because of the friend declaration. Now we get the usual output syntax\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul A class X may grant a function, or another class as its friends. Friend functions are NOT MEMBER FUNCTIONS\ulnone \
+- member access qualifiers are irrelevant to friend functions. Can access everything\
+\
+- friend functions or classes of class X can be declared by X anywhere, usually before all the members\
+\
+- Friendship is granted, not taken. Can ask for someone to become friend, but only ask them to access your data members. Cannot add more friends without rewriting the class definition. \
+- Friendship is not symmetric, if A grants friendship to B, ie A allows B to access its data members, then it is not necessarily true B grants access to A.\
+- Friendship is not transitive. If A is B\'92s friend and B is C\'92s friend, A is not necessarily C\'92s friend.\
+- Friendship is not inherited. Friends of a base class do not become friends of its derived classes automatically.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 class Student : public UPerson\{
+\f4\b0 \
+
+\f5\b friend class Hacker;
+\f4\b0  // allows Hacker class to call all member functions and data members of Student\
+
+\f5\b \}
+\f4\b0 \
+\
+=============================\
+\
+
+\f5\b \ul Hashing
+\f4\b0 \ulnone \
+\
+A hash table is an array of some fixed size, containing all the data items.\
+Each item has a 
+\f5\b \ul key
+\f4\b0 \ulnone , \ul search\ulnone  is performed based on the keys. Each key is mapped into some position in the array in the range 0 to m-1, where \ul m\ulnone  is the array size. The mapping is called \ul hash function.\ulnone \
+\
+Example applications of hash tables (eg symbol tables)\
+- To keep track of declared identifiers in a program (fast lookup)\
+- on line spell checkers - one can check each word in the dictionary in constant time and print out misspelled words in order\
+\
+General idea is to create a \ul data structure that supports 
+\f5\b search, insertion and deletion,
+\f4\b0  IN CONSTANT TIME on average. \ulnone Implementation of hash tables is called hashing. Data items generally not ordered in hash tables\
+\
+Hash tables usually don\'92t support reporting data within a given range, and listing out data in a given order (at least not in good time).\
+\
+Let the universe of keys U be the set of all possible values of the keys. \ul Example: \ulnone we have a universe of n keys, then create an array of size n, and store the item with key k in the kth position of the array.\
+\
+However, this is an unrealistic solution.\
+- \ul Insertion, deletion, search all take O(1) constant time. \ulnone Problem is it wastes too much space if universe of keys is large compared with the actual number of data to be stored. \ul Waste of memory.\ulnone \
+\
+Hash function h maps the universe of keys U into slots of a hash table T[0,1,\'85,m-1]. Several keys may map to same slots.\
+\
+We will assume all keys are natural numbers. h(k_i) is an integer in [0,\'85,m-1] and (k_i) is the input, and hash of the key (k_i) is hash value. With hashing, item of key k stored in \ul T[h(k)]\ulnone \
+\
+The only way to ensure there are no collisions is to make array m as large as the Universe - if we make it smaller, by pigeonhole principle there is guaranteed to be two functions with same different output\
+\
+Solution is to design a \ul fast hash function\ulnone  that can \ul minimise the number of  collisions\ulnone \
+\
+
+\f5\b \ul Hash Function Design
+\f4\b0 \ulnone \
+h(k) = k mod m.\
+Certain values of m should be avoided. If m=2^p, then h(k) is just the p lowest order bits of k, thus hash function does not depend on all the bits\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Good values for m:\ulnone  Primes not too close to exact powers of 2, for hash table of 2000 numbers, m =701, and we will have an average of 3 numbers\
+\
+We may do \ul separate chaining/closed addressing\ulnone :\
+Keys: the set of squared numbers.\
+h(k) = k mod 10\
+Use the idea of equivalence classes\
+0 -> 0\
+1 -> 81 -> 1\
+2 -> nil\
+3 -> nil\
+4 -> 64 -> 4\
+\'85etc\
+For every slot in our array, they will be \ul pointers to another array that connects all keys with the same hash values.\ulnone \
+Hash table becomes an array of linked lists\
+To perform lookup of an object k, traverse the linked list which holds all the elements of the hash value h(k). If we find it, return it, else return nullptr.\
+Same thing for deleting a key. traverse the list until we find it, then delete it by manipulating pointers of the element it points to and element is pointed to.\
+If hash function works well, number of keys in each linked list will be a small constant,\ul  on average\ulnone \
+- \ul disadvantage:\ulnone  memory allocation and deallocation in linked list manipulations slow down operations\
+- \ul advantage: \ulnone deletion is easy\
+\
+\
+\ul Basic strategy for open addressing\ulnone \
+- To insert a key k, compute h_0(k).\
+- If it is empty, insert it here.\
+- If collision occurs, probe an alternative cell in the following order h_1(k), h_2(k), \'85, until an empty cell is found\
+- h_i(k) = (hash(k) + f(i)) mod m, where the function f determines the collision resolution strategy and \ul f(0) = 0.\ulnone \
+\
+\ul Linear probing\ulnone \
+- choose f(i) = i\
+- table cells are probed sequentially with wrap around until an empty slot is found\
+- If no empty slot can be found to put element k, table is full, so report an error\
+- A block of contiguously occupied table entries is a cluster. On average, when we insert a new key k, we may hit the middle of a cluster. \ul Time to insert/lookup k would be proportional to half the size of a cluster\
+\ulnone - clusters separated by only one entry may more than double in size.\
+\
+\
+\ul Quadratic probing\ulnone \
+- choose f(i) = i^2\
+- if table size is prime, then a new key can always be inserted if the table is at least half empty.\
+- keys that hashed to the same value (eg 49 and 59 mod 10 both =9) will probe the same alternative cells (\ul secondary clustering\ulnone  - want to avoid this). Simulation results suggest that it generally produces more clusters, but of smaller sizeifgop\
+\
+\ul Double hashing\
+\ulnone - hash twice, f(i) = I*hash_2(k)\
+h_i(k) = (hash(k) + I*hash_2(k)) mod m\
+hash_2(k) = R - (k mod R), where R<m, and R is prime. For m=10, we can select R=7 since \ul coprime with 10, otherwise we only examine a fraction of the entries!\ulnone \
+- \ul hash_2() must never evaluate to 0\ulnone \
+- quadratic probing doesn\'92t require 2nd hash function, so simpler and faster in practice\
+\
+Deletion cannot performed in open addressing, otherwise probing sequence will be broken.\
+Solution - add an extra field to each table entry, and mark as \ul empty, active or deleted. (
+\f5\b Lazy deletion)
+\f4\b0 \
+\
+\ulnone Initially everything is empty. With table 11,21,31 in positions 1,2 and 3 with linear probing, when we delete 21 we mark 21 as deleted. In searching for 31, we start from the original position, and continue probing UNTIL we reach an EMPTY position (or find it.) If we are inserting 41, we insert it via probing position 1, then since position 2 is deleted, we \ul overwrite the entry 21.\
+\ulnone \
+Load factor \ul alpha = N/m, where N is the number of actually hashed items in the hash table, m is max capacity.\ulnone  The larger load factor becomes, the slower our operations become (eg the more our table is full)\
+\
+In practice, things work well up to alpha=0.5 (aka half full), then we create a new hash table with double the size, \ul re-hash all items with a new function, put in new table \ulnone and delete the old table.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Dealing with string keys (Method 1)
+\f4\b0 \ulnone \
+- add up ASCII values of characters in string\
+- means any permutation of letters of a given word will result in a collision (eg hello, ollhe, zz)\
+- if table size is large, eg m=10007, and all string keys have <= 8 characters, since ASCII values <= 127, then numeric keys must fall in the range 127*8 = 1016\
+- 
+\f5\b \ul second method: 
+\f4\b0 \ulnone h(key) = (key[0] + 37*key[21] + (37^2)*key[2]) mod m\
+- choose 37 because it is a decently large prime number\
+- if all 3 chars are random and table size m is 10007, then it is reasonably equitable description.\
+- however there are only 2851 different combinations for the first 3 letters of English words, so instead, we can apply the entire string\
+- 
+\f5\b \ul third method:
+\f4\b0 \ulnone  h(key) = (sum from 0 to L-1 of (37^(L-1-i)*key[I]) modulo m\
+- on average, this distributes well\
+\
+=============================\
+\
+
+\f5\b \ul Binary search tree
+\f4\b0 \ulnone \
+Height of a node = length of longest path from the node to that leaf\
+If n1 is not n2\'92s direct parent but is on the same path from n2 to root, n1 is direct ancestor of n2\
+\
+For implementing a BST, we call the destructor by calling 
+\f5\b delete
+\f4\b0  on its left and right children, so if run on the root, it recursively calls the destructor on every node in the tree\
+\
+
+\f5\b \ul Node traversal in BST
+\f4\b0 \ulnone \
+Pre order traversal (prefix notation) - data left right\
+Post order traversal - left right data\
+Inorder traversal - Left data right\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul // we can pass function pointers to other functions!\
+\ulnone // this is a inorder traversal\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 void btree_inorder(BTnode<T>*root, void (*action)(BTnode<T>* r))\{\
+if (root)\{ 
+\f4\b0 // check to make sure not nullptr
+\f5\b \
+    btree_inorder(root->get_left(), action);\
+action(root);\
+btree_inorder(root->get_right(), action);\
+\}\
+\}
+\f4\b0 \
+\
+BST has the property that all keys in x\'92s left subtree are STRICTLY smaller than key(x), and all keys in x\'92s right subtree are STRICTLY larger than key(x). Assume each node in BST has unique key so that no key values are repeated.\
+\
+However, BSTs may not be unique - different BSTs result from different orders in how elements are inserted\
+Average depth of a node on a BST is O(logN) bur worst case is O(N).\
+\
+\
+- Calling destructor of BST calls destructor of BSTNode, which calls destructor on each of its data members in the REVERSE order in which they were declared, two of which (left, right) were also BSTs, so it will eventually delete the entire tree\
+- To make a deep copy of an existing BST, it will call the BSTnode constructor, which will call the default constructor for each of its data members, which are T, left (a BST), and right (a BST). These will trigger more calls of the BST copy constructor, and the end result will return a copy of the entire tree.\
+- To find minimum value in BST, is always in the leftmost node, and max value in BST is always in rightmost node.\
+\
+
+\f5\b \ul Insertion
+\f4\b0 \ulnone \
+- traverse the node as we would a binary search tree. If the current subtree is empty, then the value to insert does not exist in this tree, so add it to the tree,\
+\
+
+\f5\b \ul Deletion
+\f4\b0 \ulnone \
+- the deleted node has 0 children - trivial\
+- the deleted node has 1 child - skip a generation (a la linked list)\
+- has 2 children: replace deleted node with maximum node in left, or minimum in right. guaranteed that this \'91replacement\'92 node does NOT have two children (since it is rightmost or leftmost), so just do the simple 0 or 1 child removal\
+\
+
+\f5\b \ul AVL Trees
+\f4\b0 \ulnone \
+- BSTs whose root\'92s left and right subtree have heights that differ by at most 1 (balanced BST). Ensures O(logN) tree depth.\
+- leaves have height 0. Parent has height = \ul max(a, b)+1 \ulnone where a, b are the heights of its two children. If child does not exist its height can be thought of as -1 (implementation specific)\
+- All subtrees of an AVL tree are also AVL trees\
+- each node stores an additional height value, used to check if the tree is balanced or not.\
+- searching, inserting, and deleting are done in O(logN) in worst case\
+- \ul balance factor\ulnone  of a node is the height of the left tree minus the height of the right subtree. For good AVL takes values (-1, 0, 1)\
+- search algorithms identical to BST\
+\
+To insert new element, it may cause the AVL tree to be unbalanced. Need to fix by 
+\f5\b \ul rotation
+\f4\b0 \ulnone \
+- \ul left/anticlockwise single: \ulnone triggered when inserting into right subtree of right child\
+Find the first node that has a problem, a (which has children which have height difference strictly greater than 1), and swap left subtree of b with right subtree of a.  Also need to fix heights. \
+\
+- \ul right/clockwise single: \ulnone triggered when inserting into left subtree of left child\
+Find the first node that has a problem, a (which has children which have height difference strictly greater than 1), and swap right subtree of b with left subtree of a.  Also need to fix heights. \
+\
+- \ul left-right double: \ulnone triggered when inserting into right subtree of left child\
+\
+- \ul right-left double: \ulnone triggered when inserting 50 into left subtree of right child\
+example: Do right rotation between child and subtree (in 
+\f5\b bold)
+\f4\b0 \
+    30\
+20   40\
+           
+\f5\b 60
+\f4\b0 \
+        
+\f5\b 50\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 =======
+\f5\b \
+
+\f4\b0     30\
+20   \ul 40\ulnone \
+           
+\f5\b \ul 50
+\f4\b0 \ulnone \
+           
+\f5\b  \ul 60\ulnone \
+=======\
+
+\f4\b0 Problem still not fixed since 40 has |balance factor| > 1. Do left rotation on 40, since problem caused by right child (60) of right subtree (underlined), do left rotation (single)\
+\
+      30\
+  20   \ul 50\ulnone \
+        \ul 40\ulnone  \ul 60\ulnone           
+\f5\b \
+=======
+\f4\b0 \
+Balance factor can be -2 (left child is taller) or 2 (right child is taller) TEMPORARILY. Will need to fix the tree only in these cases. if bfactor==-2, then left subtree needs to be fixed, find which child is causing problem.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul AVL Deletion
+\f4\b0 \ulnone \
+To delete an item from an AVL tree, search and locate the node with the required key, and delete the node like deleting a node from a BST.\
+One deletion may cause multiple rebalancing problems\
+- delete the node, replace it with either smallest value in right subtree or largest val in left subtree, then go down from the location of this node and rebalance each of its subtrees as necessary\
+\
+Tree rebalancing step adds no more than a constant factor (namely doing rotations) to the time complexity of insertion and deletion. So all of insertion, searching and deletion, require O(logN). Disadvantage of AVL is to require a bit more space to store height of an AVL node\
+\
+=============================\
+\
+
+\f5\b \ul Rvalue reference and move semantics
+\f4\b0 \ulnone \
+Variable has dual roles, depending on where it appears.\
+- lvalue is its location (read-write)\
+- prvalue (pure rvalue) [C++11]: its value (read-only)\
+x = x+1;\
+// x on left of equal sign is the lvalue, the memory location\
+\
+Now every variable has a type, and a \ul value category (lvalue, prvalue, xvalue)\ulnone \
+Xvalue = expiring value - can behave like both rvalue and lvalue (can be read and write)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Rvalue Reference definition\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 T&& x = <temporary object>;
+\f4\b0 \
+Temporary objects/values are an unnamed objects/values created automatically on the STACK during:\
+- \{TO1\} const reference initialisation\
+- \{TO2\} argument passing (eg type conversion)\
+- \{TO3\} function returned value (by copying)\
+- \{TO4\} evaluation of expressions\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Temporary objects are automatically deleted when they have served their purpose; been used. \ulnone \
+\
+Example (x+y) + 2 is run, (x+y) is a temporary unnamed integer object, and after adding 2 to it, a new temp unnamed integer object is produced, and since the expression ends, if the value is not captured in a variable, both of these objects are deleted.\
+\
+Rvalue references are\ul  aliases/references of a temporary object/value. It is used when we want to prolong the life of a temporary object such that said temp object is only destroyed when program ends/goes out of scope\ulnone \
+\
+Previously, we couldn\'92t modify temporary objects through const references because a \ul temporary object counts as an rvalue\ulnone \
+\
+Once created as an alias of a temporary object, our rvalue reference acts as any other reference. \ul Can be lvalue, prvalue.\ulnone \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 int&b = 4; 
+\f4\b0 // cant assign const literal to nonconst reference\
+
+\f5\b const int&c = 5;
+\f4\b0  // const reference initialisation\
+
+\f5\b int d = square(3);
+\f4\b0  // TO3: function returned value\
+
+\f5\b void cbr(int&x)\{\}\
+cbr(8); 
+\f4\b0 // you are assigning a pure rvalue to be a reference (the code int&x = 8; is run) - rvalues are not addressable!!\
+\
+- Lvalue reference ONLY binds to another lvalue.\
+- Const lvalue reference accepts an rvalue because a temporary value is created, which can be referenced\
+\
+Rvalues can only be used to \ul capture/bind temporary objects!\
+So int&&x = square(2); ok, but int&&x = y; // not OK!!\ulnone \
+
+\f5\b int a = 8;\
+int &&b;  
+\f4\b0 // Error: rvalue reference must be initialised
+\f5\b \
+int &&c = a;  
+\f4\b0 // Error: rvalue ref can\'92t bind to lvalue (NOT temporary)\
+
+\f5\b \
+int&&D = 5;\
+int &&e = square(4);\
+D = e = 10; 
+\f4\b0 // after D and e are defined, they can be manipulated like normal references. Can now be used as rvalues.\
+\
+Copy elision\
+
+\f5\b Word w2 = w1.to_upper_case(); 
+\f4\b0 // BY VALUE, is copy copy destroy copy destroy\
+
+\f5\b \
+Word to_upper_case()\{\
+Word(*this); 
+\f4\b0 // direct call to copy cons\
+
+\f5\b return x; 
+\f4\b0 // return by value so call copy cons again
+\f5\b \
+\}
+\f4\b0 \
+Then once the call to the function terminates, we have created a temp object. We call destructor on the scope in to_upper_case function, then call constructor since we use assign operator to save the temp object, then destroy the temp object\
+So order is \ul cons cons des cons des\ulnone \
+- with copy elision, the compiler will just do \'93copy copy des\'94.\
+\
+\
+If we do something like\
+
+\f5\b ((w1+w2)+\'94r\'94).print();
+\f4\b0 \
+// \
+Life of a temporary object is as long as necessary to complete all subexpressions up until the ; (destroyed when a REFERENCE to it goes out of scope)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Rvalue references cannot be bound to lvalues, but can be used to bound to temporary object. Cannot be rebound (same as a regular reference)\ulnone \
+- mainly used for real objects to improve code efficiency (move operations)\
+\
+After we have initialised an rvalue reference, it behaves EXACTLY as a regular object OR lvalue reference. \
+\
+Assume we have 2 overloaded functions as follows:\
+f(const T&)\
+f(T&&)\
+1. Const rvalue\
+2. Const lvalue\
+3. Rvalue reference (which has been initialised and bound to a temp object)\
+4. Lvalue reference\
+5. Temp object\
+\
+When calling f(), only 5. Temp object, will trigger the function call, since the rvalue reference behaves as a normal object, it will call the first version. \ul If f(T&&) DNE, 
+\f5\b \ulnone f(const T&) 
+\f4\b0 can take almost any arguments; const rvalue/lvalue, temp value/object, and rvalue reference\
+\
+Assume there are two types of print_word function, (
+\f5\b const Word &w), (Word&&w)
+\f4\b0 \
+- Const reference can bind to temporary objects, so if we removed the 
+\f5\b print_word(Word &&w)
+\f4\b0 , print_word(\'93Beat\'94) would call the conversion constructor by running 
+\f5\b const Word&w = \'93Beat\'94;
+\f4\b0 \
+\
+Assigning means we have to call copy constructor, pass by value, very slow if our class obj is large. Using rvalue reference means we can capture an object QUICKLY.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Move Semantics
+\f4\b0 \ulnone \
+Temporary object is not supposed to be used after being read\
+- since the temporary object will be destructed after it is used, it must be left in a state where the \ul destructor can be safely called.\ulnone \
+- more efficient as no memory allocation is needed\
+- we also need normal copy constructors and copy assignments if we wish to preserve the input argument and cannot be modified on return\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Move constructor and move assignment\ulnone \
+Move constructor takes only one argument, the same type as the class - and is passed by rvalue reference\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 Word(const Word &w);
+\f4\b0  // copy constructor, allocates new memory\
+
+\f5\b Word(Word&&w) : freq(w.freq), str(w.str) \{w.freq = 0; w.str = nullptr;\}
+\f4\b0 \
+// this is a move constructor. the only thing that points to the str is the new Word (stole the resources of the temporary object (w) as input)\
+// ALSO \ul eliminated the resources of the old object.\ulnone  With copy constructor, since the copy constructor had argument passed by const reference, it 
+\f5\b \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 \
+\
+Whenever we have a move constructor, the \ul return by value is done by move.\
+\ulnone We can also overload 
+\f5\b operator=
+\f4\b0  to make into the \ul move assignment \ulnone operator,\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 Word& operator=(const Word&w)\{
+\f4\b0 \
+// need to allocate new memory to return new object that has same attributes as the original object\
+
+\f5\b \}
+\f4\b0 \
+\
+
+\f5\b Word& operator=(Word&&w)\{
+\f4\b0 \
+// steals all resources of the input IF IT IS TEMPORARY OBJECT, and sets all values to 0 or null\
+// this is because when we go out of scope, temporary object w will be destroyed, so if we do not nullptr its str attribute, it will be destroyed, and the place we copied to will have a dangling pointer\
+// whenever an object is ready to be destroyed, just make sure to zero out and nullptr everything; good practice\
+// no assignment for the same Word object\
+
+\f5\b \}\
+\
+Word novel\{\'93hello\'94\};\
+Word novel2 = novel.to_upper_case();
+\f4\b0 \
+// \ul Copy \ulnone constructor called in the to_upper_case function\
+// the return by value is done by \ul MOVE,\ulnone  not COPY, so it creates a temp object\
+// then that temp object is \ul destroy\ulnone ed within the scope of 
+\f5\b to_upper_case()\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 // our = calls the 
+\f5\b operator=
+\f4\b0  \ul MOVE\ulnone  assignment\
+// then we \ul destroy\ulnone  the temp object after move assignment (we save it to novel2)\
+\
+// DOESNT MOVE ANYTHING. Is a special form of static casting\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 std::move(lvalue object) 
+\f4\b0 returns an
+\f5\b  rvalue reference of the object\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Std::move example
+\f4\b0 \ulnone \
+
+\f5\b Word_Pair(const Word&a, const Word&b) : w1(a), w2(b)\{\}\
+Word_Pair(Word&a, Word&b) : w1(std::move(a)), w2(std::move(b))\{\}\
+Word_Pair(Word&&a, Word&&b) : w1(std::move(a)), w2(std::move(b))\{\}
+\f4\b0 \
+// first line simply takes two words by const ref, and calls copy constructor on each respectively\
+// second line takes two words by \ul nonconst ref \ulnone (so that they CAN be modified) and calls the move constructor for w1 and w2 (since std::move(a) returns a temp object, an rvalue reference)\
+// third line takes words by \ul rvalue reference\ulnone , so is only called if a and b themselves are are temporary objects. However, we NEED the 
+\f5\b std::move(a)
+\f4\b0  and 
+\f5\b std::move(b)
+\f4\b0  because once we bound the rvalue reference to the names a, b, they are \ul treated as regular references! Need to re-cast them as rvalue references\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 Word author\{\'93ok\'94\};\
+Word title\{\'93boomer\'94\};\
+Word_Pair book\{author, title\};
+\f4\b0 \
+// Since we do not specify that author and title are const objects, of the three possible constructors that can be called, the second one (non const references) are most suitable, so book\'92s w1 and w2 will \'91steal\'92 the resources of author and title. However author and title, since bound to rvalue references, are \ul not destroyed until the end of the program \ulnone (though they contain null and 0); after which they are deleted in reverse order\
+\
+
+\f5\b Word_Pair book2 \{book\};
+\f4\b0 \
+// default copy constructor (given by c++) calls default copy constructor/assignment for EACH DATA MEMBER\
+// will NOT destroy \'91book\'92. Is copy constructor\
+\
+- If we did not have the second version (the nonconst lvalue reference that calls move constructor of w1 and w2)\
+- If we did not have the third version, since \ul Word&& can be treated as a const lvalue reference\ulnone ! it will call the 1st constructor\
+\
+After C++11, we will have default move constructor and default move assignment operator\
+
+\f5\b \ul Rule of 5 
+\f4\b0 \ulnone (whenever we have a user defined object with dynamic data members, need to write our own versions of the following):\
+1. default copy constructor\
+2. Default copy/assignment operator function\
+3. Default move constructor\
+4. Default move assignment operator\
+5. Default destructor\
+\
+Recall in C++11, we can tell the compiler:\
+To generate = default\
+Not to generate = delete\
+\
+=============================\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\i0\b \cf0 \ul Namespaces
+\f1\b0 \ulnone \
+\
+If we want to use two libraries, each consisting of some classes and functions, but some have the same name. Compiler/linker will complain since the common class and member function definitions will be defined multiple times \
+\
+We can refer to names in a namespace with the \ul scope operator ::\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ulnone If we get tired of specifying namespace, we can use the 
+\f0\b using namespace <xxx>; 
+\f1\b0  declaration to use the namespace xxx\
+\
+Certain functions and classes of the standard library (string, cout, isalpha(), \'85) and the STL vector (list, foreach, swap. \'85) are \ul all defined in namespace std\ulnone . Considered bad practice to declare the namespace std globally. Makes sure that we can see which functions are from which library\
+\
+We can also use \ul explicit declarations\ulnone  like so:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 using std::vector 
+\f1\b0 // all occurrences of vector objects are from namespace std if not explicitly specified
+\f0\b  \
+int main()\
+\{\
+vector<int> v;\
+return 0;\
+\}\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 \
+Namespaces can be defined in steps and nested. The following is an example of explicitly saying which namespace the functions originate from.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 #include <iostream>
+\f1\b0 \
+
+\f0\b namespace hkust\{\
+namespace cse \{int rank() \{return 1;\}\} 
+\f1\b0 // nested namespace
+\f0\b \
+void good() \{std::cout << \'93Good\'94 << std::endl;\}\
+\}\
+namespace hkust\{ 
+\f1\b0 // can EXTEND an existing namespace
+\f0\b \
+void school() \{std::cout << \'93School!\'94 << std::endl;\}\
+\}\
+int main()\
+\{\
+std::cout << \'93CSE rank \'93 << hkust::cse::rank() << std::endl;\
+return 0;\
+\}
+\f4\i\b0 \
+\
+===========================\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Standard template library (STL)
+\f4\b0 \ulnone \
+- involves iterators, algorithms and containers\
+- container class is a class that holds a collection of homogenous objects (same type)\
+- typical use of class templates; object types need not be known\
+- vector class is used as a substitute for basic C++ arrays\
+\
+The \ul non-member 
+\f5\b \ulnone operator<< 
+\f4\b0 can be declared as a \ul global function template,\ulnone  and \ul as a friend function\ulnone  inside the definition of the Array container class template.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Containers in STL\ulnone \
+- \ul sequence\ulnone  containers represent sequential/data structures, start from index/location 0 (eg list, vector,\ul deque\ulnone )\
+- \ul associative\ulnone  containers are non sequential (store key, value) pairs eg map/hash table, set\
+- \ul container\ulnone  \ul adaptors\ulnone  - support a limited set of container operations (eg priority-queue, queue, stack)\
+- \ul near-containers \ulnone - exhibit capabilities similar to sequence containers, but do not support all their capabilities (eg strings, bit sets, valarrays)\
+\
+\ul A DEQUE\ulnone  (double-ended queue = not stored contiguously in memory, uses a sequence of chunks of fixed size arrays. Duque does not require copying of ALL existing elements, UNLIKE STL vector)\
+- fast insertion and deletion at both ends\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul Properties of STL Sequence Containers
+\f4\b0 \ulnone \
+> Vector (1d array) - O(1) random access. Adding/removing elements at front/middle is O(1), in \ul back \ulnone is O(n).\
+> list (1d doubly linked) - O(1) adding/removin. Accessing elements at ends is O(1), in middle is O(n).\
+> deque - O(1) random access. Adding/removing elements at ends is O(1), \ul in middle is O(n).\
+\
+Element access for all:\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ulnone - front() = first element, back() = last element\
+- element access for vector and deque is []\
+\
+\ul Adding/removing elements:\ulnone \
+- push_back() = append element, pop_back() = remove last element\
+- push_front() = insert element at the front, pop_front() = remove first element \ul (only for list and deque)\ulnone \
+\
+\ul Operations on sequence containers\ulnone \
+insert(p, x) => inserts element x at position p\
+erase(p) => remove an element at position p\
+clear() => erase all elements\
+size() => return num of elements in container\
+empty() => return true if sequence is empty\
+resize(int new_size) => changes size of the sequence\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 typedef<a type expression><type-synonym>
+\f4\b0  is a keyword used to introduce a synonym for an existing type expression: 
+\f5\b template<typename T, typename Sequence=deque<T>>
+\f4\b0 \
+
+\f5\b class stack\{\
+protected:\
+Sequence c;\
+public:\
+typedef typename Sequence::value_type value_type;\
+\'85\
+\}
+\f4\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Example: balanced parentheses\ulnone \
+If left parenthesis in string, add to stack. If right parenthesis found, check if matching left parenthesis found. If yes, pop stack and don\'92t add\
+\
+\ul Example: balanced parentheses\ulnone \
+If left parenthesis in string, add to stack. If right parenthesis found, check if matching left parenthesis found. If yes, pop stack and don\'92t add\
+\
+Queues are FIFO (at least in one direction)\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ul STL iterators: generalised pointers
+\f4\b0 \ulnone \
+For a sequence of values of basic types, one may set up a pointer 
+\f5\b p
+\f4\b0 , which supports the following operations:\
+p = x // initialise to beginning of array\
+*p // access element by dereferencing\
+p-> // same as above\
+\'97p // point to previous element\
+++p // point to next\
+==, != // comparisons\
+\
+Iterators are generalised pointers. T\ul o traverse the elements of a sequence container sequentially, use an 
+\f1\i0 iterator\ulnone  of the container type. 
+\f0\b list<int>::iterator
+\f1\b0  is an iterator for a list storing integers.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 const_iterator
+\f1\b0  - object that it points to can\'92t be modified\
+\ul STL sequence containers\ulnone  provide begin() and end() to set an iterator to beginning and end of a \ul container\
+// iterates through items of STL list\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\i\b \cf0 \ulnone for (p=x.begin(); p != x.end(); ++p)\
+cout << *p << Lendl;
+\f4\b0 \
+\
+Iterators allow us to separate algorithms from containers when they are used with templates. The 
+\f5\b find()
+\f4\b0  function is abstracted so that it can be used for any container that provides a suitable iterator\
+
+\f5\b template <class Iterator, class T>\
+Iterator find(Iterator begin, Iterator end, const T&value)\{\
+\'85\}
+\f4\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul STL algorithms are implemented as global functions\ulnone \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 Template <class Iterator, class Predicate>\
+Iterator find_if(Iterator first, Iterator last, Predicate predicate)\{\'85\}
+\f4\b0 \
+// stops when a given condition, a predicate (eg > 100), is satisfied. Allows partial match, or match by keys.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Note: can pass a function to another function as its argument - rather, we pass the 
+\f5\b function pointer\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ulnone int larger(int x, int y) \{return (x > y) ? x : y\}\
+int smaller(int x, int y) \{return (x < y) ? x : y\}\
+int main()\{\
+int choice;\
+cin >> choice;\
+int (*f\}(int, int) = (choice==1) ? larger : smaller;\
+cout << f(3, 5) << endl;\
+\}\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 In the second to last line, f is a pointer to a function with two int arguments and a return type int, and becomes \'93larger\'94 if input is 1 and \'93smaller\'94 otherwise.\
+\ul Need to include keywords like inline and const in our declaration of function pointers\
+\
+\ulnone Can also make \ul arrays of function pointers\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 \ulnone double (*f[]) (double x, double y) = \{add, subtract, multiply, divide\};\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f4\b0 \cf0 // f[1](2.4, 2.2) refers to calling subtract(2.4, 2.2)\
+\
+\ul STL function objects are GENERALISATIONS\ulnone  of function pointers. An object that can be called like a function is a functoid/functor. An object can be called if it supports 
+\f5\b operator()
+\f4\b0 . \
+A function object/function that returns a boolean value is called a predicate\
+\
+When find_if() examines each item (recall one of its arguments is also a predicate), say x[j] in the container 
+\f5\b vector<int> x
+\f4\b0 , against the temporary 
+\f5\b Greater_Than
+\f4\b0  \ul function object,\ulnone  it will call the function object\'92s 
+\f5\b operator() 
+\f4\b0 with x[j] as argument, or G
+\f5\b reater_Than g(365); g.operator()(x[j])\
+\
+
+\f4\b0 Other algorithms in the STL include finding min and max element, equal, generate, remove, remove_if, reverse, rotate, random_shuffle, sort, merge, binary_search and various set operations\
+\
+===========================\
+Non const object can call non const AND const member functions.\
+Const object can call CONST only\
+BUT\
+\
+If a function has a \ul const reference parameter \ulnone it can be called by both const and non const arguments, otherwise can ONLY be called by NONCONST\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\i0 \cf0 \ul If we have a const variable, cannot return it by reference unless reference is also const
+\f4\i \ulnone \
+\
+Const member functions CANNOT call NONCONST member functions or modify data members\
+\
+When \ul const functions return references or pointers to members of the class, they must also be const\ulnone \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f5\b \cf0 int x= 5;\
+int *a = &x , *b =&x; 
+\f4\b0 // a and b are both pointer to ints \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f6\i0\fs28 \cf9 \cb10 \expnd0\expndtw0\kerning0
+int\cf11  
+\f7\b \cf12 const
+\f6\b0 \cf13 &\cf11  ref2 \cf13 =\cf11  var, ref3 \cf13 =\cf11  var;   
+\f8\i \cf14 // CONFUSING:
+\f6\i0 \cf11  
+\f8\i \cf14 ref2 is a reference, but ref3 isn't:
+\f6\i0 \cf11  
+\f8\i \cf14 ref3 is a constant int initialized with
+\f6\i0 \cf11  
+\f8\i \cf14 var's value\
+
+\f6\i0 \cf9 int\cf11  \cf13 &
+\f7\b \cf12 const
+\f6\b0 \cf11  constRef \cf13 =\cf11  var // constRef is a constant reference to an integer. ERROR because var is declared as nonconst int and changing var would violate our agreement
+\f4\i\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+
+\f6\i0\fs28 \cf9 \cb10 \expnd0\expndtw0\kerning0
+int\cf13 &&\cf11  rref \cf13 =\cf11  \cf9 int\cf11 (\cf13 5\cf11 ), value \cf13 =\cf11  \cf13 10\cf11 ;     
+\f8\i \cf14 // CONFUSING:
+\f6\i0 \cf11  
+\f8\i \cf14 rref is an rvalue reference, but value is
+\f6\i0 \cf11  
+\f8\i \cf14 a mere int.
+\f6\i0 \cf11 \
+\pard\pardeftab720\partightenfactor0
+
+\f4\i\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\i0 \cf0 \ul Cannot set non const pointer to const variable, or non const reference to const object - otherwise able to change value of const object through the reference\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ulnone A pointer to a constant variable can point to a non constant variable.\
+\
+Const pointer must be initialised upon declaration, same with reference variables\
+References cannot be re-assigned to depend on another variable.\
+\
+Array is a constant pointer.\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f0\b \cf0 \ul Static int
+\f1\b0 \ulnone  is not counted by sizeof(). In templates, the same value is kept for the same function call. Example:\
+template <typename T>\
+void fun(const T&x)\{\
+    Static int count = 0; cout << count << endl; ++count;\
+\}\
+fun(1);\
+fun(2.2);\
+fun(2);\
+// generates two copies of fun, one with fun(const int&), one with fun (const float&). ++count called twice for type int, so at end is 1. Called once for type float, so at end is 0.
+\f2\fs29\fsmilli14667 \cf2 \expnd0\expndtw0\kerning0
+\
+\pard\pardeftab720\partightenfactor0
+
+\f9\fs26\fsmilli13333 \cf0 \
+\
+New C/C++ project-> C++ Managed build -> instead of Executable, go to Makefile project -> MacOSX GCC\
+./pa2.exe to run the demo code\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f1\fs24 \cf0 \kerning1\expnd0\expndtw0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+\cf0 \ul Are you making a variable?\
+- yes: has a valid constructor? Check function overloading\
+\'97 implicit/explicit constructor called?\
+Note what scope it is defined under\
+- when it goes out of scope: does destructor exist? If yes, memory leak?\
+\
+Check memory leak\ulnone \
+
+\f0\b Downloads/DrMemory/bin64/drmemory -- Downloads/DrMemory/bin64/comp2012_assignment3\
+\
+Downloads/DrMemory/bin64/drmemory -- 
+\f6\b0\fs22 \cf15 \CocoaLigature0 eclipse-workspace/comp2012_assignment3/
+\f0\b\fs24 \cf0 \CocoaLigature1 Debug/comp2012_assignment3\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f6\b0\fs22 \cf15 \CocoaLigature0 cd eclipse-workspace/comp2012_assignment3\
+}

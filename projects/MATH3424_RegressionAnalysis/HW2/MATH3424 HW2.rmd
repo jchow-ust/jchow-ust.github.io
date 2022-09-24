@@ -1,0 +1,365 @@
+---
+title: "MATH3424 HW2"
+author: "Chow, Hau Cheung Jasper (hcjchow / 20589533)"
+date: "September 27, 2021"
+output: pdf_document
+---
+
+```{r}
+# Q1 TEST
+setwd("/Users/jchow/Downloads/MATH3424 R") # need to set the starting directory as this
+data <- read.table(file="Supervisor.txt",header=TRUE)
+head(data)
+
+Sx2_y <- sum( (data$X2-mean(data$X2)) * (data$Y-mean(data$Y)) ) 
+Sx2_x2 <- sum((data$X2-mean(data$X2))^2)
+beta_1_hat <- Sx2_y/Sx2_x2
+beta_0_hat <- mean(data$Y) - mean(data$X2)*beta_1_hat
+
+mean(data$Y)
+mean(data$X2)
+Sx2_y
+Sx2_x2
+
+beta_1_hat
+beta_0_hat
+
+sup_model_1 = lm(data$Y ~ data$X2, data = data)
+summary(sup_model_1)
+e_y_x2 <- resid(sup_model_1)
+```
+
+```{r}
+# Q1-2 TEST
+Sx2_x1 <- sum( (data$X2-mean(data$X2)) * (data$X1-mean(data$X1)) ) 
+Sx2_x2 <- sum((data$X2-mean(data$X2))^2)
+c_1_hat <- Sx2_x1/Sx2_x2
+c_0_hat <- mean(data$X1) - mean(data$X2)*c_1_hat
+
+mean(data$X1)
+mean(data$X2)
+Sx2_x1
+Sx2_x2
+
+c_1_hat
+c_0_hat
+
+sup_model_2 = lm(data$X1 ~ data$X2, data = data)
+summary(sup_model_2)
+e_x1_x2 <- resid(sup_model_2)
+```
+
+```{r}
+# Q1-3 TEST
+S_e_y_x2 <- sum( (e_y_x2-mean(e_y_x2)) * (e_x1_x2-mean(e_x1_x2)) ) 
+S_e_x1_x2 <- sum((e_x1_x2-mean(e_x1_x2))^2)
+d_1_hat <- S_e_y_x2/S_e_x1_x2
+d_0_hat <- mean(e_y_x2) - mean(e_x1_x2)*d_1_hat
+
+mean(e_y_x2)
+mean(e_x1_x2)
+S_e_y_x2
+S_e_x1_x2
+
+d_1_hat
+d_0_hat
+
+sup_model_3 = lm(e_y_x2 ~ e_x1_x2)
+summary(sup_model_3)
+```
+
+```{r}
+# Q2a
+exm_data <- read.table(file="Examination_Data.txt",header=TRUE)
+head(exm_data)
+q2_model1 <- lm(F ~ P1, data=exm_data)
+q2_model2 <- lm(F ~ P2, data=exm_data)
+q2_model3 <- lm(F ~ P1+P2, data=exm_data)
+```
+
+```{r}
+# Q2a cont.
+summary(q2_model1)
+summary(q2_model2)
+summary(q2_model3)
+```
+2a) The fitted models are:
+
+Model 1: $\hat{F}=-22.3424+1.2605P_1$
+
+Model 2: $\hat{F}=-1.85355+1.00427P_2$
+
+Model 3: $\hat{F}=-14.5005+0.4883P_1+0.672P_2$
+
+2b) From the above summaries, the t-statistic for $H_0:\beta_0=0,H_1:\beta_0\neq0$ has the values -1.932 for model 1, -0.245 for model 2, -1.570 for model 3.
+
+```{r}
+q2_alpha = 0.05
+qt(1-q2_alpha/2, df=22-2) # for models 1 and 2
+qt(1-q2_alpha/2, df=22-3) # for model 3
+```
+
+For model 1, since $|-1.932|\leq t_{1-\alpha/2,20}$, we fail to reject the null hypothesis that $H_0:\beta_0=0$.
+
+For model 2, since $|-0.245|\leq t_{1-\alpha/2,20}$, we fail to reject the null hypothesis that $H_0:\beta_0=0$.
+
+For model 3, since $|-1.57|\leq t_{1-\alpha/2,19}$, we fail to reject the null hypothesis that $H_0:\beta_0=0$
+
+2c) Comparing the output of the first two models, we see that the multiple R-squared value (aka correlation to F) for the 2nd model with predictor $P_2$ is higher than the multiple R-squared value for the 1st model with predictor $P_1$. As such, $P_2$ is a better predictor of $F$ than $P_1$. 
+
+2d) Let us consider the hypothesis test where $H_0:$ reduced model (q2_model2) is adequate, against $H_1:$ full model (q2_model3) is adequate. Construct the F statistic as follows:
+
+```{r}
+# Q2d
+sse_rm <- sum((exm_data$F - q2_model2$fitted.values)^2)
+sse_fm <- sum((exm_data$F - q2_model3$fitted.values)^2)
+p = 2 # since 2 predictors in full model
+k = 2 # = no. of parameters in reduced model = beta_0, beta_1
+n = length(exm_data$F) # number of datapoints
+q2_F = ((sse_rm-sse_fm)/(p+1-k)) / (sse_fm/(n-p-1))
+q2_F
+
+alpha <- 0.05 # choose a confidence level
+F_alpha <- qf(1-alpha, df1=p+1-k, df2=n-p-1, lower.tail=TRUE)
+F_alpha
+```
+
+Hence at confidence level $\alpha=0.05$, since the F-statistic is greater than the critical value, we reject the null hypothesis that the reduced model is adequate, as such we will use the full model with both predictors. 
+
+```{r}
+# Q2d continued
+q2_pred_int_conf = 0.05 # chosen value of alpha
+
+x_0_df = data.frame(P1=78, P2=85) # add new datapoint
+y_0_hat <- predict(q2_model3, newdata=x_0_df)
+y_0_hat # our prediction
+
+X <- data.matrix(exm_data[,c('P1','P2')]) # convert predictor columns into matrix
+X <- cbind(rep(1,n), X) # add a column of 1's before the actual data
+
+x_0 <- data.matrix(x_0_df[,c('P1','P2')])
+x_0 <- cbind(rep(1,1), x_0)
+
+t_stat <- qt(q2_pred_int_conf/2, df=n-3, lower.tail=FALSE)
+sigma_hat <- (sse_fm/(n-3))^0.5 # since 3 coefficients in full model
+se_y_0_hat <- sigma_hat*(1 + (x_0 %*% solve(t(X) %*% X) %*% t(x_0)))^0.5
+
+# the lower and upper limits of the prediction interval are as follows:
+y_0_hat - t_stat*se_y_0_hat
+y_0_hat + t_stat*se_y_0_hat
+
+# check answers
+predict(q2_model3, newdata=x_0_df, interval="prediction", level=1-q2_pred_int_conf)
+```
+We can observe that the prediction interval at the confidence level $\alpha=0.05$ is [71.79724, 89.6284]. (You may modify the R code by changing the value of q2_pred_int_conf to see the prediction interval for other values of alpha.)
+
+```{r}
+# Q4a
+q4a_rm <- lm(Y-0.5*(X1+X3) ~ 1, data=data)
+q4a_fm <- lm(Y-0.5*(X1+X3) ~ X1+X3, data=data)
+anova(q4a_rm, q4a_fm)
+
+qf(1-0.05, df1=2, df2=27, lower.tail=TRUE) # crit value for 4a
+qf(1-0.05, df1=2, df2=26, lower.tail=TRUE) # crit value for 4b
+```
+Here, the trick is to notice that under the null hypothesis $H_0:\beta_1=\beta_3=0.5$, the model is $Y=\beta_0+\beta_1X_1+\beta_3X_3+\epsilon$. Then, let $\alpha_0=\beta_0,\alpha_1=\beta_1-0.5,\alpha_3=\beta_3-0.5$ and write
+$Y-0.5(X_1+X_3)=\beta_0+(\beta_1-0.5)X_1+(\beta_3-0.5)X_3+\epsilon$ and write $Y-0.5(X_1+X_3)=\alpha_0+\alpha_1X_1+\alpha_3X_3+\epsilon$ (this is the new full model)
+
+We may also re-express the null hypothesis as follows: $H_0:\alpha_1=\alpha_3=0$. Under $H_0$, the model is $Y=\alpha_0+\epsilon$ (reduced model) and the alternative hypothesis is that at least one of $\{\alpha_1,\alpha_3\}$ is nonzero. In general, the `lm(Y~1)` command fits an intercept-only model to the response variable Y.
+
+From the ANOVA table, we see that the p-value = Pr(>F)=0.1183, so we fail to reject the null hypothesis at any significance level <0.1183 (eg 0.05.) From the ANOVA table, we see that the F-statistic is 2.3126 < critical value of 3.35, so we fail to reject the null hypothesis at any significance level 0.05.
+
+```{r}
+# Q4b
+q4b_rm <- lm(Y-0.5*(X1+X3) ~ X2, data=data)
+q4b_fm <- lm(Y-0.5*(X1+X3) ~ X1+X2+X3, data=data)
+anova(q4b_rm, q4b_fm)
+```
+We use the same idea as in Q4a.
+Notice that under the null hypothesis $H_0:\beta_1=\beta_3=0.5$, the model is $Y=\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3+\epsilon$. Then, let $\alpha_0=\beta_0,\alpha_1=\beta_1-0.5,\alpha_2=\beta_2,\alpha_3=\beta_3-0.5$ and write
+$Y-0.5(X_1+X_3)=\beta_0+(\beta_1-0.5)X_1+\beta_2X_2+(\beta_3-0.5)X_3+\epsilon$ and write $Y-0.5(X_1+X_3)=\alpha_0+\alpha_1X_1+\alpha_2X_2+\alpha_3X_3+\epsilon$ (this is the new full model)
+
+We may also re-express the null hypothesis as follows: $H_0:\alpha_1=\alpha_3=0$. Under $H_0$, the model is $Y=\alpha_0+\alpha_2X_2+\epsilon$ (reduced model) and the alternative hypothesis is that at least one of $\{\alpha_1,\alpha_3\}$ is nonzero. As such, we use the anova command on the reduced and full models.
+
+From the ANOVA table, we see that the p-value = Pr(>F)=0.159, so we fail to reject the null hypothesis at any significance level <0.159 (eg 0.05.) Alternatively, we see that the F-statistic is 1.9753 < critical value of 3.37, so we fail to reject the null hypothesis at any significance level 0.05.
+
+```{r}
+# Q5
+qf(0.05, df1=4, df2=88, lower.tail=FALSE)
+
+t_stat = 2.16
+pt(abs(t_stat), df=88, lower.tail=FALSE)
+
+qt(1-0.05, df=88, lower.tail=TRUE)
+```
+
+```{r}
+# Q6
+qf(0.05, df1=3, df2=88, lower.tail=FALSE)
+```
+
+
+```{r}
+# Q7a
+cr_data <- read.table(file="Computer_Repair.txt",header=TRUE)
+cr_model = lm(Minutes ~ Units, data=cr_data)
+summary(cr_model)
+```
+
+The regression equation is $\hat{Y}=37.21+9.9695X_1$ where $Y$ denotes Minutes, $X_1$ denotes number of Units.
+
+The standard regression assumptions are:
+(1) Assumption of linearity
+(2.1) Assumption that errors are independent of each other
+(2.2) Assumption that errors are normally distributed
+(2.3) Assumption that errors each have mean 0
+(2.4) Assumption that errors each have common variance $\sigma^2$
+(3.1) Assumption that predictor variables $X_1,X_2,...X_n$ are nonrandom.
+(3.2) Assumption that predictor values $x_{1j},x_{2j},...,x_{nj}$ are measured without error.
+(3.3) Assumption that predictors  $X_1,X_2,...X_n$ are independent of each other.
+(4) Assumption that all observations are equally reliable and have an approximately equal role in determining regression results.
+
+Of these assumptions, (3.2) and (3.1) are difficult to assume. Also, there is only 1 predictor so (3.3) is automatically satisfied. Therefore, we will only examine the rest. 
+
+```{r}
+# Q7b
+X <- as.matrix(cr_data[,-1])
+X <- cbind(rep(1,length(cr_data$Units)),X)
+hat_mat <- X %*% solve(t(X) %*% X) %*% t(X)
+leverages <- diag(hat_mat)
+plot(seq(1,length(cr_data$Units)), leverages, xlab="Index", ylab="Leverages")
+plot(seq(1,length(cr_data$Units)), residuals(cr_model), xlab="Index", ylab="Residuals")
+```
+
+As seen here, the leverages do not follow a random pattern (they seem to be quadratic) - observations no. 6-15 have low leverages while observations 1-5 and 16-25 have substantially higher leverages.
+
+If the residuals were independent of each other, we would expect that the scatter plot of residuals by observation number would have a random pattern (2.1). However, this is not the case, as in the residuals-index plot, the residuals seem to follow a quadratic pattern. A quadratic model $Y=\beta_0+\beta_1X_1+\beta_2X_1^2+\epsilon$ may be more suitable. Hence (2.1) is violated. 
+
+```{r}
+# Q7b cont.
+cr_model.stdres = rstandard(cr_model)
+qqnorm(cr_model.stdres, ylab="Sample Quantiles", xlab="Theoretical Quantiles")
+qqline(cr_model.stdres)
+```
+
+Under the normality of errors assumption (2.2), the ordered residuals should be approximately form a straight line with slope 1 and intercept 0 with the quantiles of the standard normal distribution. From examining the Q-Q plot of the standardised residuals against the standard normal distribution, we notice that there appears to be a fair amount of deviation (especially in the first two and last four points), hence it is likely (2.2) is violated.
+
+```{r}
+# Q7b cont.
+# remember this is plot(x, y) so stdres needs to be 2nd argument
+plot(fitted.values(cr_model), cr_model.stdres, ylab="Std. Residuals", xlab="Units")
+abline(a=0, b=0, col="red")
+mean(cr_model.stdres)
+```
+
+In the case of simple linear regression, the plot of standard residuals against the predictor and the plot of standard residuals against the response are identical.
+
+The standard residuals should be uncorrelated with the predictor variables/response. As such when plotting the std. residuals against each of the predictors, we expect to see a random scatter of points, which is NOT the case, since fitted values in the 10-15 region seem to indicate a negative standard residual, while fitted values < 5 seem to indicate a slightly positive standard residual. Hence the linearity assumption (1) is not satisfied despite the mean of the standardised residuals (-0.022) being approximately close to 0. At each value of Units, the mean of the standardised residuals differs and is not necessarily close to 0, we can say (2.3) (errors having mean 0) is violated.
+
+At every fitted value, the spread of the residuals is roughly the same (between 1 and -1). Hence the constant variance assumption (2.4) is satisfied.
+
+```{r}
+# Q7b cont.
+# this didn't work
+#update.packages(checkBuilt=TRUE)
+#install.packages("car", dependencies=TRUE)
+#install.packages("olsrr")
+
+# to actually install a package go to Tools > Install Packages > type in package's name
+library(olsrr)
+ols_plot_cooksd_bar(cr_model)
+ols_plot_hadi(cr_model)
+ols_plot_dffits(cr_model)
+ols_plot_resid_pot(cr_model)
+```
+
+From observing the various plots (Cook's distance, DFITS, Hadi, potential-residual), we notice that in all cases, observation #24 far exceeds the threshold or is significantly different than the other observations. In the potential-residual plot, #24 has high residual and decently high potential. Hence obs. #24 is an influential point (so are #1 and #2 in Cook's distance plot.) Therefore assumption (4) is violated since not all assumptions have an equal role in determining the regression result.
+
+
+Q10: According to the notes, outliers in the response are those whose standardised residual $r_i\geq 3$ and outliers in the predictor space are those whose leverage value $p_{ii}\geq \dfrac{2(p+1)}{n}$.
+
+```{r}
+#install.packages(scatterplot3d)
+#library(scatterplot3d)
+#scatterplot3d(exm_data)
+#pairs(exm_data[,1:3], lower.panel=NULL)
+```
+
+In models 1 and 2, high leverage points have $p_{ii}\geq 2(1+1)/22=4/22$ meaning the potential function is threshold $4/22/(1-4/22)=2/9$.
+In model 3, high leverage points have $p_{ii}\geq 2(2+1)/22=6/22$ meaning the potential function is threshold $6/22/(1-6/22)=3/8$.
+
+```{r}
+# Q10a
+q2_model1.stdres = rstandard(q2_model1)
+abs(q2_model1.stdres)>=3
+q2_model2.stdres = rstandard(q2_model2)
+abs(q2_model2.stdres)>=3
+q2_model3.stdres = rstandard(q2_model3)
+abs(q2_model3.stdres)>=3
+```
+
+However, listing the standardised residuals of each model, we see no observation's std. residual exceeds 3 (although in models 2 and 3, observation no. 9 has $|r_i|\geq2$ so it is likely an outlier in response space.)
+
+First look at points whose potential function exceeds the threshold, those are high-leverage points aka outliers in the predictor space.
+
+```{r}
+q2_model1_pr <- ols_plot_resid_pot(q2_model1)
+q2_model1_pr[["data"]][["pot"]]>=2/9
+
+q2_model2_pr <- ols_plot_resid_pot(q2_model2)
+q2_model2_pr[["data"]][["pot"]]>=2/9
+
+q2_model3_pr <- ols_plot_resid_pot(q2_model3)
+q2_model3_pr[["data"]][["pot"]]>=3/8
+```
+In conclusion:
+
+In model 1, points 9 are X-outliers.
+
+In model 2, no X-outliers.
+
+In model 3, points 7 and 15 are X-outliers.
+
+Let's combine this knowledge with graphical methods (Cook's, DFITS, Hadi).
+
+```{r}
+# Q10a cont.
+ols_plot_cooksd_bar(q2_model1)
+ols_plot_hadi(q2_model1)
+ols_plot_dffits(q2_model1)
+
+ols_plot_cooksd_bar(q2_model2)
+ols_plot_hadi(q2_model2)
+ols_plot_dffits(q2_model2)
+
+ols_plot_cooksd_bar(q2_model3)
+ols_plot_hadi(q2_model3)
+ols_plot_dffits(q2_model3)
+```
+
+According to the plots, in model 1, Cook's and DFITS show points 9 to be highly influential. In both model 2 and model 3, Cook's and DFITS show points 7 and 9 to be highly influential.
+
+In conclusion:
+
+In model 1, points 9 are X-outliers, point 9 is influential.
+
+In model 2, no X-outliers. Points 7 and 9 are influential.
+
+In model 3, points 7 and 15 are X-outliers. Points 7 and 9 are influential.
+
+Q10b) According to the Hadi influence plots in Q10a, the model with the most even spread of influence is Model 1 (the other two have point 9's influence measure significantly higher than that of the others, at values near 1.1 and 1.6 respectively.) At such, models 2 and 3 may be less reliable when it comes to measuring the response variable if the predictor/response is an outlier, hence we should choose model 1 to predict F.
+
+```{r}
+# Q11
+q11_data <- data.frame(Y=c(8.11, 11, 8.2, 8.3, 9.4, 9.3, 9.6, 10.3, 11.3, 11.4, 12.2, 12.9),
+                       X=c(0, 5, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24))
+q11_model = lm(Y ~ X, data=q11_data)
+summary(q11_model)
+q11_model_pr <- ols_plot_resid_pot(q11_model)
+```
+
+```{r}
+# Q11
+q11_model_pr[["data"]][["res"]]
+q11_model_pr[["data"]][["pot"]]
+```

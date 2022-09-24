@@ -1,0 +1,38 @@
+# COMP3511 PA2 (Fall 2021)
+# The input file for banker's algorithm 
+# Empty lines and lines starting with '#' are ignored
+
+algorithm = Safety
+strategy = smallest-index
+num_resource = 4
+num_process = 5
+
+# Definition of the available vector
+#  you can assume that it must be defined after the num_process
+available_vector = 2 1 2 0
+
+# Definition of the Allocation Matrix
+#  you can assume that it must be defined after the num_resource and num_process
+#  starts with a line allocation_matrix = 
+#  follows by the number of process lines
+#  each line has number of resources non-negative integers 
+#  you can assume there won't be empty lines in the matrix
+allocation_matrix = 
+0 0 1 2
+2 0 0 0
+0 0 3 4
+2 3 5 4
+0 3 3 2
+
+# Definition of the Max Matrix
+#   you can assume that it must be defined after the num_resource and num_process
+#   starts with a line max_matrix = 
+#   follows by the number of process lines
+#   each line has number of resources non-negative integers
+#   you can assume there won't be empty lines in the matrix
+max_matrix = 
+0 0 3 2
+2 7 5 0
+6 6 5 6
+4 3 5 6 
+0 6 5 2

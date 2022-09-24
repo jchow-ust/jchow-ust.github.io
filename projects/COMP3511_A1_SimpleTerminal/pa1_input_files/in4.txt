@@ -1,0 +1,1 @@
+wc -l < redir_and_pipe.c

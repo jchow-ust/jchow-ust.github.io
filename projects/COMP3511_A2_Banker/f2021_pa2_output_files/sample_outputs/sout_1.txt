@@ -1,0 +1,50 @@
+=== Banker's algorithm input values ===
+algorithm = Safety
+strategy = smallest-index
+num_process = 5
+num_resource = 4
+available_vector = [2,1,2,0]
+allocation_matrix = [
+0,0,1,2
+2,0,0,0
+0,0,3,4
+2,3,5,4
+0,3,3,2
+]
+max_matrix = [
+0,0,3,2
+2,7,5,0
+6,6,5,6
+4,3,5,6
+0,6,5,2
+]
+need_matrix = [
+0,0,2,0
+0,7,5,0
+6,6,2,2
+2,0,0,2
+0,3,2,0
+]
+finish_vector = [0,0,0,0,0]
+=== Banker's algorithm execution ===
+=== Step 0 ===
+work_vector = [2,1,2,0]
+finish_vector = [0,0,0,0,0]
+=== Step 1 ===
+work_vector = [2,1,3,2]
+finish_vector = [1,0,0,0,0]
+=== Step 2 ===
+work_vector = [4,4,8,6]
+finish_vector = [1,0,0,1,0]
+=== Step 3 ===
+work_vector = [4,7,11,8]
+finish_vector = [1,0,0,1,1]
+=== Step 4 ===
+work_vector = [6,7,11,8]
+finish_vector = [1,1,0,1,1]
+=== Step 5 ===
+work_vector = [6,7,14,12]
+finish_vector = [1,1,1,1,1]
+=== Banker's algorithm result ===
+The system is safe
+execution_order = [0,3,4,1,2]
