@@ -4,14 +4,15 @@
 
 ### Data Science & Statistical Analysis Projects
 
-[Yelp Review Sentiment Analysis](../projects/COMP4332_Project1_SentimentAnalysis)
+[Yelp Review Sentiment Analysis](https://github.com/jchow-ust/jchow-ust.github.io/quick-portfolio-master/projects/COMP4332_Project1_SentimentAnalysis)
 <img src="images/dummy_thumbnail.jpg?raw=true"/>
 
 Report:
 (../projects/COMP4332_Project1_SentimentAnalysis/Submission/Report.pdf)
 
-Code:
-(../projects/COMP4332_Project2_GraphLinkPrediction/Submission/Bi-LSTM-RNN.ipynb)
+[![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/quick-portfolio-master/projects/COMP4332_Project1_SentimentAnalysis/Submission/Bi-LSTM-RNN.ipynb)
+
+Skills:
 
 https://img.shields.io/badge/-Python-blue
 
@@ -134,7 +135,6 @@ This repo contains source code for building a simple website in C# that interfac
 
 ---
 [GANs](https://github.com/jchow-ust/comp5214-hw3)
-<img src="images/GANs_1.png?raw=true"/>
 
 https://img.shields.io/badge/-Python-blue
 
@@ -149,6 +149,8 @@ Report(https://github.com/jchow-ust/comp5214-hw3/tree/main/skeleton_code/COMP521
 Code(https://github.com/jchow-ust/comp5214-hw3/tree/main/skeleton_code)
 
 This project involved implementing DCGAN and CycleGAN architectures from scratch for style transfer of emojis from Windows to Apple. Windows emojis tend to be flatter and have black borders, whereas Apple-style emojis tend to have depth and are borderless. It is observed that the introduction of the cycle consistency loss in CycleGAN greatly helped improve performance during such style transfer, as the vanilla DCGAN method produces checkerboard effects and the discriminator loss quickly saturates to 0 without causing the generator loss to further decrease.
+
+<center><img src="images/GANs_1.png"/></center>
 
 ---
 [Turbulence detection in images](http://example.com/)
