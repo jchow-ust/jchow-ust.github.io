@@ -18,7 +18,7 @@
 
 In this project supervised by Dr. Chen Qifeng, we developed Big2-RL, a reinforcement learning framework for Big Two (Cantonese: 鋤大弟), a four-player card-shedding game popular in Southeast Asia. The evaluation metric is average expected value (EV) of the winnings. Due to the symmetry of all players in the game, a reinforcement learning (RL) agent achieves an EV significantly above 0 has a winning strategy and is said to be performing well. Our reinforcement learning agent was trained on HKUST's HPC3 (High Performance Computing Cluster) for multiprocessing in order to improve training time and reduce variance. We consider a variety of training approaches and model architectures, and when combined with Deep Monte Carlo, we demonstrate that a simple MLP with residual connections trained against prior iterations of itself far outperforms other model architectures, managing to achieve a statistically significant average EV of +1.09/1000 hands (where the agent played all 4 positions in each hand) against prior copies of itself, and average EV of +1.81/1000 hands over the current state-of-the-art PPO algorithm proposed and implemented by Charlesworth ([GitHub](https://github.com/henrycharlesworth/big2_PPOalgorithm)). This thereby demonstrates the effectiveness of Monte Carlo methods for multi-agent imperfect information tasks. 
 
-<img src="images/GANs_1.png"/>
+<img src="images/big2-1.png"/>
 
 ### Yelp Review Sentiment Analysis
 
@@ -36,14 +36,14 @@ In this project supervised by Dr. Chen Qifeng, we developed Big2-RL, a reinforce
 
 This project involves sentiment analysis of text from Yelp reviews of various businesses. The task is to predict the number of stars (1-5) from the corresponding rating text. As the dataset is imbalanced in favour of 5-star reviews, F1 score is used as the evaluation metric instead of accuracy. Interestingly, we observe that the best model (logistic regression) outperformed all CNN/RNN-based models we tested, though both had a validation F1 score ~10% higher than the baseline given by our instructor. Our final model's F1 score is one of the highest in the class, ranking in the top 10%.
 
-<img src="images/GANs_1.png"/>
+<img src="images/4332-1.png"/>
 
 ---
 ### Social Network Link Prediction
 
 [![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4332_Project2_GraphLinkPrediction/Submission/Code.ipynb)
 
-[View Report](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/quick-portfolio-master/projects/COMP4332_Project2_GraphLinkPrediction/Submission/Report.pdf)
+[View Report](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4332_Project2_GraphLinkPrediction/Submission/Report.pdf)
 
 ![](https://img.shields.io/badge/-Python-blue)
 ![](https://img.shields.io/badge/-Pytorch-orange)
@@ -52,14 +52,14 @@ This project involves sentiment analysis of text from Yelp reviews of various bu
 
 This project involves link prediction between nodes of an undirected graph, where the nodes denote Yelp users and the links denote friendships between users. An ensemble of first-order and second-order random walk models were used to achieve an AUC-ROC score of 93.9% on the validation set, which outperforms the baseline given by our instructor. Additionally, our final model's AUC-ROC score ranked the highest in the class, outperforming all other teams.
 
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
+<img src="images/4332-2.png"/>
 
 ---
 ### Rating Prediction with Wide & Deep Model
 
 [![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4332_Project3_WideDeepModel/Jasper_Proj3_Wide_&_Deep_Learning.ipynb)
 
-[View Report](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4332_Project3_WideDeepModel/Report%20%3.pdf)
+[View Report](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4332_Project3_WideDeepModel)
 
 ![](https://img.shields.io/badge/-Python-blue)
 ![](https://img.shields.io/badge/-Pytorch-orange)
@@ -68,7 +68,7 @@ This project involves link prediction between nodes of an undirected graph, wher
 
 This project involves predicting ratings (from 1-5) of users on given products given a sparse initial user-item rating matrix, which is typical of recommendation systems. The evaluation metric is the RMSE (Root Mean Squared Error.) After hyperparameter tuning and feature engineering, the wide and deep model achieves a validation RMSE of 1.014 which far outperforms the instructor baseline RMSE of 1.09. Our final model's RMSE was the lowest in the class and outperformed all other teams.
 
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
+<img src="images/4332-3.png"/>
 
 ---
 ### Spark with Machine Learning
@@ -82,27 +82,7 @@ This project involves predicting ratings (from 1-5) of users on given products g
 
 This repo contains an end-to-end implementation of machine learning with Spark. The task is to predict power output given a set of environmental readings from a power plant. This notebook was run on a Databricks Community Edition cluster (this can be done for free) after uploading the requisite data files to DBFS (Databricks File Storage). Models used include linear regression, decision tree, and random forest. It is observed that the random forest model outperforms both the decision tree and linear regression models.
 
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
-
----
-### Regression Analysis Homework
-
-[![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/MATH3424_RegressionAnalysis)
-
-![](https://img.shields.io/badge/-R-black)
-![](https://img.shields.io/badge/-DeepLearning-lightgrey)
-
-This repo contains all homework done for the HKUST course "MATH3424 Regression Analysis". Homework is written in Markdown with commented R code. Topics covered in the course include:
-
-1. Multiple Linear Regression
-
-2. Regression Diagnostics: Analysis of Residuals
-
-3. Qualitative Predictor Variables in Regression
-
-4. Transformation of Variables and Collinearity, Variable and Model Selection
-
-5. Logistic Regression
+<img src="images/sparkml.png"/>
 
 ---
 ### Pawpularity Prediction of Pet Photos with CNN
@@ -119,14 +99,14 @@ This repo contains all homework done for the HKUST course "MATH3424 Regression A
 
 Capstone project for predicting the popularity scores of pets based on their pictures on the online pet adoption website Petfinder.my. Although certain breeds may be more popular overall, it is hypothesised that features such as whether pets' faces are shown, or whether humans are present in the picture may influence how popular that pet profile is. This information can guide adoption agencies into taking profile pictures that are more eye-catching so that stray animals can find caring families as soon as possible.
 
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
+<img src="images/4995-2-1.png"/>
 
 ---
 ### Simple C# Website interfacing with Oracle SQL Database]
 
 [![TODO View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/comp5214-hw3/tree/main/skeleton_code)
 
-![](https://img.shields.io/badge/-C#-purple)
+![](https://img.shields.io/badge/-C%23-purple)
 ![](https://img.shields.io/badge/-SQL-green)
 
 This repo contains source code for building a simple website in C# that interfaces with Oracle SQL database to display results for popularly used queries.
@@ -150,7 +130,7 @@ This project involved implementing DCGAN and CycleGAN architectures from scratch
 ---
 ### Turbulence detection in images
 
-[Example turbulence detection classification in different bands]
+TODO Example turbulence detection classification in different bands
 
 [![View on GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4211%20Machine%20Learning/Final_Project/group6-final.ipynb)
 
@@ -166,7 +146,7 @@ This project involved classifying information received from different bands as d
 ---
 ### Object detection with bounding boxes on Caltech birds dataset
 
-[2 types of Caltech birds sample image classification]
+TODO 2 types of Caltech birds sample image classification
 
 [![View on GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4211%20Machine%20Learning/mini_project/miniproj.ipynb)
 
@@ -180,20 +160,40 @@ This project involved bounding box detection of images from the Caltech birds da
 <img src="images/dummy_thumbnail.jpg?raw=true"/>
 
 ---
-### COMP5214: Advanced Deep Learning Architectures
+### COMP5214: Advanced Deep Learning Architectures Assignments
 
 ![](https://img.shields.io/badge/-Python-blue)
 ![](https://img.shields.io/badge/-Pytorch-orange)
 ![](https://img.shields.io/badge/-Numpy-blue)
 ![](https://img.shields.io/badge/-DeepLearning-lightgrey)
 
-This repository contains completed homework assignments for course COMP5211: Advanced Deep Learning Architectures. Topics covered include:
+This repository contains completed homework assignments for course COMP5214: Advanced Deep Learning Architectures. Topics covered include:
 
-1. KNN, MLP, and customised CNN implementation (MNIST) ([GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/5214_Assignments/HW1)
+1. KNN, MLP, and customised CNN implementation (MNIST) ([GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/5214_Assignments/HW1))
 
 2. Word2Vec Embeddings and Graph Neural Networks ([GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/5214_Assignments/HW2))
 
 <img src="images/5214_1.png"/>
+
+---
+### Regression Analysis Homework
+
+[![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/MATH3424_RegressionAnalysis)
+
+![](https://img.shields.io/badge/-R-black)
+![](https://img.shields.io/badge/-Regression-lightgrey)
+
+This repo contains all homework done for the HKUST course "MATH3424 Regression Analysis". Homework is written in Markdown with commented R code. Topics covered in the course include:
+
+1. Multiple Linear Regression
+
+2. Regression Diagnostics: Analysis of Residuals
+
+3. Qualitative Predictor Variables in Regression
+
+4. Transformation of Variables and Collinearity, Variable and Model Selection
+
+5. Logistic Regression
 
 ---
 ### COMP4211: Machine Learning Assignments
