@@ -1,1 +1,1 @@
-Portfolio link: https://jchow-ust.github.io/minimal-portfolio
+Portfolio link: https://jchow-ust.github.io
