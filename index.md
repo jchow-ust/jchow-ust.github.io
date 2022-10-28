@@ -20,6 +20,7 @@ In this project supervised by Dr. Chen Qifeng, we developed Big2-RL, a reinforce
 
 <img src="images/big2-1.png"/>
 
+---
 ### Yelp Review Sentiment Analysis
 
 [![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4332_Project1_SentimentAnalysis/Submission/Bi-LSTM-RNN.ipynb)
@@ -71,20 +72,6 @@ This project involves predicting ratings (from 1-5) of users on given products g
 <img src="images/4332-3.png"/>
 
 ---
-### Spark with Machine Learning
-
-[![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4651_A5_SparkML/ml_pipeline.ipynb)
-
-![](https://img.shields.io/badge/-R-black)
-![](https://img.shields.io/badge/-SQL-green)
-![](https://img.shields.io/badge/-Python-blue)
-![](https://img.shields.io/badge/-Pyspark-blue)
-
-This repo contains an end-to-end implementation of machine learning with Spark. The task is to predict power output given a set of environmental readings from a power plant. This notebook was run on a Databricks Community Edition cluster (this can be done for free) after uploading the requisite data files to DBFS (Databricks File Storage). Models used include linear regression, decision tree, and random forest. It is observed that the random forest model outperforms both the decision tree and linear regression models.
-
-<img src="images/sparkml.png"/>
-
----
 ### Pawpularity Prediction of Pet Photos with CNN
 
 [![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/MATH4995_CapstoneProject/MATH4995_Pawpularity/MATH4995_P2.ipynb)
@@ -104,14 +91,14 @@ Capstone project for predicting the popularity scores of pets based on their pic
 ---
 ### Simple C# Website interfacing with Oracle SQL Database]
 
-[![TODO View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/comp5214-hw3/tree/main/skeleton_code)
+[![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/UniversityWebsite)
 
 ![](https://img.shields.io/badge/-C%23-purple)
 ![](https://img.shields.io/badge/-SQL-green)
 
 This repo contains source code for building a simple website in C# that interfaces with Oracle SQL database to display results for popularly used queries.
 
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
+<img src="images/sqlwebsite.png"/>
 
 ---
 ### Emoji Style Transfer with DCGAN & CycleGAN 
@@ -130,8 +117,6 @@ This project involved implementing DCGAN and CycleGAN architectures from scratch
 ---
 ### Turbulence detection in images
 
-TODO Example turbulence detection classification in different bands
-
 [![View on GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4211%20Machine%20Learning/Final_Project/group6-final.ipynb)
 
 ![](https://img.shields.io/badge/-Python-blue)
@@ -141,12 +126,10 @@ TODO Example turbulence detection classification in different bands
 
 This project involved classifying information received from different bands as different types of turbulence (moderate, severe, or none). F1 score was used as the evaluation metric. TODO expand
 
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
+<img src="images/4211.png"/>
 
 ---
 ### Object detection with bounding boxes on Caltech birds dataset
-
-TODO 2 types of Caltech birds sample image classification
 
 [![View on GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4211%20Machine%20Learning/mini_project/miniproj.ipynb)
 
@@ -157,7 +140,19 @@ TODO 2 types of Caltech birds sample image classification
 
 This project involved bounding box detection of images from the Caltech birds dataset. IoU (intersection over union) (of predicted vs actual bounding boxes) was used as the evaluation metric. TODO expand
 
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
+<img src="images/caltechbirds.png"/>
+
+---
+### Spark with Machine Learning
+
+[![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4651_A5_SparkML/ml_pipeline.ipynb)
+
+![](https://img.shields.io/badge/-R-black)
+![](https://img.shields.io/badge/-SQL-green)
+![](https://img.shields.io/badge/-Python-blue)
+![](https://img.shields.io/badge/-Pyspark-blue)
+
+This repo contains an end-to-end implementation of machine learning with Spark. The task is to predict power output given a set of environmental readings from a power plant. This notebook was run on a Databricks Community Edition cluster (this can be done for free) after uploading the requisite data files to DBFS (Databricks File Storage). Models used include linear regression, decision tree, and random forest. It is observed that the random forest model outperforms both the decision tree and linear regression models.
 
 ---
 ### COMP5214: Advanced Deep Learning Architectures Assignments
@@ -167,7 +162,7 @@ This project involved bounding box detection of images from the Caltech birds da
 ![](https://img.shields.io/badge/-Numpy-blue)
 ![](https://img.shields.io/badge/-DeepLearning-lightgrey)
 
-This repository contains completed homework assignments for course COMP5214: Advanced Deep Learning Architectures. Topics covered include:
+This repository contains completed homework assignments for course "COMP5214: Advanced Deep Learning Architectures". Topics covered include:
 
 1. KNN, MLP, and customised CNN implementation (MNIST) ([GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/5214_Assignments/HW1))
 
@@ -176,14 +171,14 @@ This repository contains completed homework assignments for course COMP5214: Adv
 <img src="images/5214_1.png"/>
 
 ---
-### Regression Analysis Homework
+### MATH3424: Regression Analysis Homework
 
 [![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/MATH3424_RegressionAnalysis)
 
 ![](https://img.shields.io/badge/-R-black)
 ![](https://img.shields.io/badge/-Regression-lightgrey)
 
-This repo contains all homework done for the HKUST course "MATH3424 Regression Analysis". Homework is written in Markdown with commented R code. Topics covered in the course include:
+This repo contains all homework done for the HKUST course "MATH3424: Regression Analysis". Homework is written in Markdown with commented R code. Topics covered in the course include:
 
 1. Multiple Linear Regression
 
@@ -196,6 +191,18 @@ This repo contains all homework done for the HKUST course "MATH3424 Regression A
 5. Logistic Regression
 
 ---
+### MATH2411: Applied Statistics Final Project
+
+[![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/MATH2411_Project)
+
+![](https://img.shields.io/badge/-R-black)
+![](https://img.shields.io/badge/-Regression-lightgrey)
+
+This repo contains the final project for the HKUST course "MATH2411: Applied Statistics", including the dataset used (`basketball_data.csv`), our written report, and R code. The project involved conducting statistical analysis on whether certain performance metrics such as high offensive rating and having more star players lead to more wins.
+
+<img src="images/2411-final.png"/>
+
+---
 ### COMP4211: Machine Learning Assignments
 
 ![](https://img.shields.io/badge/-Python-blue)
@@ -205,7 +212,7 @@ This repo contains all homework done for the HKUST course "MATH3424 Regression A
 ![](https://img.shields.io/badge/-UnsupervisedLearning-purple)
 ![](https://img.shields.io/badge/-ReinforcementLearning-purple)
 
-This repository contains completed homework assignments for course COMP4211: Machine Learning. Topics covered include:
+This repository contains completed homework assignments for course "COMP4211: Machine Learning". Topics covered include:
 
 1. Multi-layer perceptron (MNIST) ([GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4211%20Machine%20Learning/Assignment%201%20MNIST))
 
@@ -218,21 +225,17 @@ This repository contains completed homework assignments for course COMP4211: Mac
 
 ### COVID-based game with GUI]
 
-[image of COVID based game gameplay]
-
 [![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/CovidGameGUI)
 
 ![](https://img.shields.io/badge/-Java-orange)
 ![](https://img.shields.io/badge/-JavaFX-orange)
 
-This repo contains source code for a GUI-based resource management game developed using JavaFX. Rules for the game are detailed in [TODO need find file].
+This repo contains source code for a GUI-based resource management game developed using JavaFX for the course "COMP3021: Java Programming". Rules for the game are detailed on pages 2 and 3 of the assignment instructions found [here](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/CovidGameGUI/COMP3021-PA1.pdf)
 
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
+<img src="images/covid_game.png"/>
 
 ---
 ### 'Battle City' arcade game in MIPS
-
-[Image of battle city gameplay]
 
 [![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/mips_battleCity)
 
@@ -241,7 +244,7 @@ This repo contains source code for a GUI-based resource management game develope
 
 This repo contains source code in MIPS and Java for the implementation of the 'Battle City' arcade game, in which the player controls a tank and attempts to destroy enemy tanks on varied terrain.
 
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
+<img src="images/mips_bc.png"/>
 
 ---
 
@@ -273,7 +276,7 @@ This repo contains an implementation of Banker's algorithm in C to detect deadlo
 
 ![](https://img.shields.io/badge/-C++-brightgreen)
 
-This repo contains class notes and assignments for the course COMP2012: Object-Oriented Programming and Data Structures with C++.
+This repo contains class notes and assignments for the course "COMP2012: Object-Oriented Programming and Data Structures with C++".
 
 ---
 ### MIPS scripts
@@ -282,7 +285,7 @@ This repo contains class notes and assignments for the course COMP2012: Object-O
 
 ![](https://img.shields.io/badge/-MIPS-brightgreen)
 
-Miscellaneous MIPS scripts for homework in the course COMP2611: Computer Organization.
+Miscellaneous MIPS scripts for homework in the course "COMP2611: Computer Organization".
 
 ---
 <center>Powered by Jekyll and the Minimal Theme.</center>
