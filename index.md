@@ -84,7 +84,7 @@ This project involves predicting ratings (from 1-5) of users on given products g
 ![](https://img.shields.io/badge/-Numpy-blue)
 ![](https://img.shields.io/badge/-DeepLearning-lightgrey)
 
-Capstone project for predicting the popularity scores of pets based on their pictures on the online pet adoption website Petfinder.my. Although certain breeds may be more popular overall, it is hypothesised that features such as whether pets' faces are shown, or whether humans are present in the picture may influence how popular that pet profile is. This information can guide adoption agencies into taking profile pictures that are more eye-catching so that stray animals can find caring families as soon as possible.
+Capstone project for predicting the popularity scores of pets based on their pictures on the online pet adoption website Petfinder.my. Although certain breeds may be more popular overall, it is hypothesised that features such as whether pets' faces are shown, or whether humans are present in the picture may influence how popular that pet profile is. This information can guide adoption agencies into taking profile pictures that are more eye-catching so that stray animals can find caring families as soon as possible. The pawpularity score of an image ranges from 0-100, and the evaluation metric used is Root Mean Squared Error (RMSE). Ultimately, the final model used both metadata and image features, and when combined with a customised weighted loss function, I managed to achieve an RMSE of 18.044 on the Kaggle leaderboard, which is not too far from the top score of 17.65.
 
 <img src="images/4995-2-1.png"/>
 
@@ -96,7 +96,7 @@ Capstone project for predicting the popularity scores of pets based on their pic
 ![](https://img.shields.io/badge/-C%23-purple)
 ![](https://img.shields.io/badge/-SQL-green)
 
-This repo contains source code for building a simple website in C# that interfaces with Oracle SQL database to display results for popularly used queries.
+This repo contains source code for building a simple website in C# that interfaces with Oracle SQL database to display results for popularly used queries. The web application also supports addition and deletion of records to said database.
 
 <img src="images/sqlwebsite.png"/>
 
@@ -115,7 +115,7 @@ This project involved implementing DCGAN and CycleGAN architectures from scratch
 <center><img src="images/GANs_1.png"/></center>
 
 ---
-### Turbulence detection in images
+### Turbulence detection in multispectral images
 
 [![View on GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4211%20Machine%20Learning/Final_Project/group6-final.ipynb)
 
@@ -124,7 +124,7 @@ This project involved implementing DCGAN and CycleGAN architectures from scratch
 ![](https://img.shields.io/badge/-Numpy-blue)
 ![](https://img.shields.io/badge/-DeepLearning-lightgrey)
 
-This project involved classifying information received from different bands as different types of turbulence (moderate, severe, or none). F1 score was used as the evaluation metric. TODO expand
+This project involved classifying multispectral images of particles, where each spectra (or channel) captured specific information (e.g. UV light) into different types of turbulence (moderate, severe, or none). F1 score was used as the evaluation metric. The dataset was imbalanced as only a small number of samples showed severe turbulence. However, through experimentation with data augmentation, different loss metrics, and different CNN model architectures, we observe that the focal loss paired with an ensemble of different CNN architectures best improved performance and achieved an average 70% F1 score on the validation set across all three classes.
 
 <img src="images/4211.png"/>
 
@@ -138,7 +138,7 @@ This project involved classifying information received from different bands as d
 ![](https://img.shields.io/badge/-Numpy-blue)
 ![](https://img.shields.io/badge/-DeepLearning-lightgrey)
 
-This project involved bounding box detection of images from the Caltech birds dataset. IoU (intersection over union) (of predicted vs actual bounding boxes) was used as the evaluation metric. TODO expand
+This project involved object detection by finding the bounding box of birds in images from the Caltech birds dataset. IoU (intersection over union) (of predicted vs actual bounding boxes) was used as the evaluation metric. After employing hyperparameter tuning and cross validation, the tuned ResNet model achieved an average test set IoU of 0.85 and was the highest performing model in our class. The below figure shows the performance of our final model on one such image, where the ground truth bounding box is highlighted in red and the final model's predicted bounding box is highlighted in blue.
 
 <img src="images/caltechbirds.png"/>
 
@@ -230,7 +230,7 @@ This repository contains completed homework assignments for course "COMP4211: Ma
 ![](https://img.shields.io/badge/-Java-orange)
 ![](https://img.shields.io/badge/-JavaFX-orange)
 
-This repo contains source code for a GUI-based resource management game developed using JavaFX for the course "COMP3021: Java Programming". Rules for the game are detailed on pages 2 and 3 of the assignment instructions found [here](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/CovidGameGUI/COMP3021-PA1.pdf)
+This repo contains source code for a GUI-based resource management game developed using JavaFX for the course "COMP3021: Java Programming". Rules for the game are detailed on pages 2 and 3 of the assignment instructions found [here.](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/CovidGameGUI/COMP3021-PA1.pdf)
 
 <img src="images/covid_game.png"/>
 
