@@ -117,7 +117,7 @@ This project involved implementing DCGAN and CycleGAN architectures from scratch
 ---
 ### Turbulence detection in multispectral images
 
-[![View on GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4211%20Machine%20Learning/Final_Project/group6-final.ipynb)
+[![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4211%20Machine%20Learning/Final_Project/group6-final.ipynb)
 
 ![](https://img.shields.io/badge/-Python-blue)
 ![](https://img.shields.io/badge/-Pytorch-orange)
@@ -131,7 +131,7 @@ This project involved classifying multispectral images of particles, where each 
 ---
 ### Object detection with bounding boxes on Caltech birds dataset
 
-[![View on GitHub](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4211%20Machine%20Learning/mini_project/miniproj.ipynb)
+[![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/COMP4211%20Machine%20Learning/mini_project/miniproj.ipynb)
 
 ![](https://img.shields.io/badge/-Python-blue)
 ![](https://img.shields.io/badge/-Pytorch-orange)
