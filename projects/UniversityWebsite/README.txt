@@ -1,7 +1,7 @@
 README for TAs
 
 Preliminaries:
-Github repo containing the data I used: https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/UniversityWebsite/comp3311_asm4data
+Github repo containing the data I used: https://github.com/jchow-ust/comp3311_asm4data
 
 I used the same dataset as in Assignment 3, but changed some of the text files via 3311_load_data.ipynb to fully match the Assignment 3 solution.
 ** In premium.csv, I changed zhouguanyu -> zhouguanyu24 (this was an error in 30 Mar Assignment 3 dataset)
