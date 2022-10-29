@@ -51,7 +51,7 @@ This project involves sentiment analysis of text from Yelp reviews of various bu
 ![](https://img.shields.io/badge/-Numpy-blue)
 ![](https://img.shields.io/badge/-DeepLearning-lightgrey)
 
-This project involves link prediction between nodes of an undirected graph, where the nodes denote Yelp users and the links denote friendships between users. An ensemble of first-order and second-order random walk models were used to achieve an AUC-ROC score of 93.9% on the validation set, which outperforms the baseline given by our instructor. Additionally, our final model's AUC-ROC score ranked the highest in the class, outperforming all other teams.
+This project involves link prediction between nodes of an undirected graph, where the nodes denote Yelp users and the links denote friendships between users. An ensemble of first-order and second-order random walk models were used to achieve an AUC-ROC score of 93.9% on the validation set, which outperformed all other teams in our class.
 
 <img src="images/4332-2.png"/>
 
@@ -67,7 +67,7 @@ This project involves link prediction between nodes of an undirected graph, wher
 ![](https://img.shields.io/badge/-Numpy-blue)
 ![](https://img.shields.io/badge/-DeepLearning-lightgrey)
 
-This project involves predicting ratings (from 1-5) of users on given products given a sparse initial user-item rating matrix, which is typical of recommendation systems. The evaluation metric is the RMSE (Root Mean Squared Error.) After hyperparameter tuning and feature engineering, the wide and deep model achieves a validation RMSE of 1.014 which far outperforms the instructor baseline RMSE of 1.09. Our final model's RMSE was the lowest in the class and outperformed all other teams.
+This project involves predicting ratings (from 1-5) of users on given products given a sparse initial user-item rating matrix, which is typical of recommendation systems. The evaluation metric is the RMSE (Root Mean Squared Error.) After hyperparameter tuning and feature engineering, the wide and deep model achieved a validation RMSE of 1.014 which far outperformed the best instructor-given baseline RMSE of 1.09. Additionally, our final model's RMSE was the lowest in the class, outperforming all other teams.
 
 <img src="images/4332-3.png"/>
 
@@ -84,7 +84,7 @@ This project involves predicting ratings (from 1-5) of users on given products g
 ![](https://img.shields.io/badge/-Numpy-blue)
 ![](https://img.shields.io/badge/-DeepLearning-lightgrey)
 
-Capstone project for predicting the popularity scores of pets based on their pictures on the online pet adoption website Petfinder.my. Although certain breeds may be more popular overall, it is hypothesised that features such as whether pets' faces are shown, or whether humans are present in the picture may influence how popular that pet profile is. This information can guide adoption agencies into taking profile pictures that are more eye-catching so that stray animals can find caring families as soon as possible. The pawpularity score of an image ranges from 0-100, and the evaluation metric used is Root Mean Squared Error (RMSE). Ultimately, the final model used both metadata and image features, and when combined with a customised weighted loss function, I managed to achieve an RMSE of 18.044 on the Kaggle leaderboard, which is not too far from the top score of 17.65.
+Capstone project for predicting the popularity scores of pets based on their pictures on the online pet adoption website Petfinder.my. Although certain breeds may be more popular overall, it is hypothesised that features such as whether pets' faces are shown, or whether humans are present in the picture may influence how popular that pet profile is. This information can guide adoption agencies into taking profile pictures that are more eye-catching so that stray animals can find caring families as soon as possible. The pawpularity score of an image ranges from 0-100, and the evaluation metric used is Root Mean Squared Error (RMSE). Ultimately, the final model used both metadata and image features, and when combined with a customised weighted loss function, I managed to achieve an RMSE of 17.09 on the Kaggle private leaderboard, for which I was awarded a bronze medal. It should be noted that the top score (lowest RMSE) was 16.82.
 
 <img src="images/4995-2-1.png"/>
 
@@ -223,7 +223,7 @@ This repository contains completed homework assignments for course "COMP4211: Ma
 ---
 ## Software Engineering
 
-### COVID-based game with GUI]
+### COVID-based game with GUI
 
 [![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/CovidGameGUI)
 
