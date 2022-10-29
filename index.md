@@ -89,7 +89,7 @@ Capstone project for predicting the popularity scores of pets based on their pic
 <img src="images/4995-2-1.png"/>
 
 ---
-### Simple C# Website interfacing with Oracle SQL Database]
+### Simple C# Website interfacing with Oracle SQL Database
 
 [![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/jchow-ust.github.io/tree/main/projects/UniversityWebsite)
 
