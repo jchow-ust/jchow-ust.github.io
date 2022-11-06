@@ -101,6 +101,19 @@ This repo contains source code for building a simple website in C# that interfac
 <img src="images/sqlwebsite.png"/>
 
 ---
+### MongoDB NoSQL Credential Storage System
+
+[![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/mongodb-passwords)
+
+![](https://img.shields.io/badge/-Python-blue)
+![](https://img.shields.io/badge/-NoSQL-green)
+![](https://img.shields.io/badge/-MongoDB-green)
+
+Created a cluster in MongoDB Atlas and NoSQL database to store my login credentials and associated information, such as birth dates, security questions and answers, etc. For websites which were used to submit job applications, further information such as job requirements, date applied, expected salary, and follow-up information can also be saved for ease of access during interviews or future applications with the same organisation.
+
+<img src="images/mongodb.png"/>
+
+---
 ### Emoji Style Transfer with DCGAN & CycleGAN 
 
 [![View on GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/jchow-ust/comp5214-hw3/tree/main/skeleton_code)
